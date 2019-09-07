@@ -14,7 +14,7 @@ var config = {
         }
 
     },
-    scene: [LoadSprite]
+    scene: [TestLevel]
 };
 
 var game = new Phaser.Game(config);
