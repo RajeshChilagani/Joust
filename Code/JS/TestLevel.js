@@ -9,11 +9,14 @@ class TestLevel extends Phaser.Scene{
           
     }
     create(){
-        character = this.physics.add.image(300,0,"pika"); 
+        character = this.physics.add.sprite(300,0,"pika"); 
+        this.input.keyboard.on("keyup_X", function(event){
+            character.setVelocity(character.body.velocity.x, character.body.velocity.y - 100);
+        }, this);
     }
     update(delta){
         if(character.y > 500) {
-            character.setVelocity(character.getVelocity().x, -1);
+            character.setVelocity(character.body.velocity.x, -1);
         }
     }
 }
