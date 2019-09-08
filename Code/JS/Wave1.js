@@ -13,6 +13,9 @@ class Wave1 extends Phaser.Scene
     }
     create()
     {
+        let score=0;
+        let scoreText;
+
         this.platforms = this.physics.add.staticGroup();
         this.platforms.create(350, 568, 'baseplatform').setScale(2).refreshBody();
         this.platforms.create(100, 150, 'platform');
@@ -28,7 +31,7 @@ class Wave1 extends Phaser.Scene
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
-            frameRate: 10,
+            frameRate: 30,
             repeat: -1
         });
         
@@ -41,7 +44,7 @@ class Wave1 extends Phaser.Scene
         this.anims.create({
             key: 'right',
             frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
-            frameRate: 10,
+            frameRate: 30,
             repeat: -1
         });
 
@@ -60,7 +63,18 @@ class Wave1 extends Phaser.Scene
         
         });
         this.physics.add.collider(this.enemies,this.platforms)
-        this.physics.add.collider(this.enemies,this.player)
+        this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this)
+
+        scoreText = this.add.text(20,20,'Score:0',{ fontSize: '32px', fill: '#ffffff' });
+
+        function CheckCollision(player,enemie)
+        {
+            console.log(player.y+24,enemie.y)
+           if(player.y+24<enemie.y)
+           {
+               enemie.disableBody(true,true);
+           }
+        }
           
     }
     update()
