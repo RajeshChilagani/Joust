@@ -73,9 +73,12 @@ class Wave1 extends Phaser.Scene
            if(player.y+24<enemie.y)
            {
                enemie.disableBody(true,true);
+               score+=1;
+               scoreText.setText('Score: ' + score);
            }
         }
           
+        
     }
     update()
     {
@@ -98,11 +101,9 @@ class Wave1 extends Phaser.Scene
 
             this.player.anims.play('turn');
         }
-
-        if (this.cursors.up.isDown)
-        {
+        this.input.keyboard.on('keyup_UP',function(event){
             this.player.setVelocityY(-100);
-        }
+        },this)
 
     }
 }
