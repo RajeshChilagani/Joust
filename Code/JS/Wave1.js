@@ -8,7 +8,7 @@ class Wave1 extends Phaser.Scene
        
         this.load.image('baseplatform','../Assets/baseplatform.png');
         this.load.image('platform','../Assets/platform1.png');
-        this.load.image('enemie','../Assets/star.png');
+        this.load.image('enemy','../Assets/star.png');
         this.load.spritesheet('player','../Assets/dude.png',{frameWidth:32,frameHeight:48});
     }
     create()
@@ -25,7 +25,7 @@ class Wave1 extends Phaser.Scene
         this.platforms.create(100, 450, 'platform');
         
         this.player = this.physics.add.sprite(100,450,'player');
-        this.player.setBounce(0.1);
+        this.player.setBounce(1,1);
         this.player.setCollideWorldBounds(true);
 
         this.anims.create({
@@ -48,11 +48,11 @@ class Wave1 extends Phaser.Scene
             repeat: -1
         });
 
-        this.physics.add.collider(this.player,this.platforms)
+        this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
        
 
        this.enemies = this.physics.add.group({
-            key: 'enemie',
+            key: 'enemy',
             repeat: 11,
             setXY: { x: 12, y: 0, stepX: 70 }
         });
@@ -62,22 +62,32 @@ class Wave1 extends Phaser.Scene
             child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
         
         });
-        this.physics.add.collider(this.enemies,this.platforms)
-        this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this)
+        this.physics.add.collider(this.enemies,this.platforms);
+        this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
 
         scoreText = this.add.text(20,20,'Score:0',{ fontSize: '32px', fill: '#ffffff' });
 
-        function CheckCollision(player,enemie)
+        function CheckCollision(player,enemy)
         {
-            console.log(player.y+24,enemie.y)
-           if(player.y+24<enemie.y)
+            console.log(player.y+24,enemy.y);
+           if(player.y+24<enemy.y)
            {
-               enemie.disableBody(true,true);
+               enemy.disableBody(true,true);
                score+=1;
                scoreText.setText('Score: ' + score);
            }
         }
-          
+        
+        function hitPlatform(character, floor) {
+            if(this.player.body.touching.down && !this.player.body.touching.left && !this.player.body.touching.right) { //Collisions with just the bottom of the player don't cause y bounce
+                this.player.body.setVelocity(this.player.body.velocity.x,0);
+            }
+        }
+        
+        this.input.keyboard.on("keyup_X", function(event){
+            this.player.setVelocity(this.player.body.velocity.x, this.player.body.velocity.y - 100);
+        }, this);
+
         
     }
     update()
@@ -101,9 +111,6 @@ class Wave1 extends Phaser.Scene
 
             this.player.anims.play('turn');
         }
-        this.input.keyboard.on('keyup_UP',function(event){
-            this.player.setVelocityY(-100);
-        },this)
-
+       
     }
 }
