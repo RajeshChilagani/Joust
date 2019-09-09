@@ -86,31 +86,43 @@ class Wave1 extends Phaser.Scene
         
         this.input.keyboard.on("keyup_X", function(event){
             this.player.setVelocity(this.player.body.velocity.x, this.player.body.velocity.y - 100);
-        }, this);
-
-        
+            this.move(true);
+        }, this); 
     }
-    update()
-    {
+
+    move(whenJumpPressed){
         this.cursors = this.input.keyboard.createCursorKeys();
-        if (this.cursors.left.isDown)
+        if (this.cursors.left.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
-            this.player.setVelocityX(-160);
+            if(this.player.body.velocity.x > -180 && this.player.body.velocity.x <= 0){
+                this.player.setVelocityX(this.player.body.velocity.x-5);
+            } else if (this.player.body.velocity.x > 0){
+                this.player.setVelocityX(this.player.body.velocity.x-10);
+            }
 
             this.player.anims.play('left', true);
         }
-        else if (this.cursors.right.isDown)
+        if (this.cursors.right.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
-            this.player.setVelocityX(160);
+            if(this.player.body.velocity.x < 180 && this.player.body.velocity.x >= 0){
+                this.player.setVelocityX(this.player.body.velocity.x+5);
+            } else if (this.player.body.velocity.x < 0){
+                this.player.setVelocityX(this.player.body.velocity.x+10);
+            }
+            
 
             this.player.anims.play('right', true);
         }
-        else
-        {
-            this.player.setVelocityX(0);
+    }       
 
-            this.player.anims.play('turn');
-        }
+    update()
+    {
+       this.move(false);
+        //else
+        //{
+            //this.player.anims.play('turn');
+        //}
        
     }
+    
 }
