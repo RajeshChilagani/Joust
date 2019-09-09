@@ -128,9 +128,9 @@ class Wave1 extends Phaser.Scene
 
     enemyMove(){ //enemy random jumping
         this.enemies.children.iterate(function (child) {
-            var z = Math.floor(Math.random() * 10);
+            var z = Math.floor(Math.random() * 15);
             if(z === 1){
-                child.setVelocity(child.body.velocity.x, child.body.velocity.y - 70);
+                child.setVelocity(child.body.velocity.x, child.body.velocity.y - 50);
             }
             if(child.body.velocity.y < - 150) {
                 child.setVelocityY(-150);
