@@ -21,8 +21,8 @@ class Wave1 extends Phaser.Scene
         this.platforms.create(100, 150, 'platform');
         this.platforms.create(400, 300, 'platform');
         this.platforms.create(700, 150, 'platform');
-        this.platforms.create(700, 450, 'platform');
-        this.platforms.create(100, 450, 'platform');
+        this.platforms.create(700, 400, 'platform');
+        this.platforms.create(100, 400, 'platform');
         
         this.player = this.physics.add.sprite(100,450,'player');
         this.player.setBounce(1,1);
@@ -53,16 +53,19 @@ class Wave1 extends Phaser.Scene
 
        this.enemies = this.physics.add.group({
             key: 'enemy',
-            repeat: 11,
-            setXY: { x: 12, y: 0, stepX: 70 }
+            repeat: 3,
         });
         
-        this.enemies.children.iterate(function (child) {
-        
-            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-        
-        });
-        this.physics.add.collider(this.enemies,this.platforms);
+        this.enemies.children.iterate(function (child) { //sets initial position, velocity
+            var z = Math.floor(Math.random() * 5) + 1;
+            child.setX(this.platforms.children.getArray()[z].body.x + 70); //70 hard code for center right now
+            child.setY(this.platforms.children.getArray()[z].body.y - 20); //20 so above
+            if(Math.random() < .5) {child.setVelocityX(50);}
+            else {child.setVelocityX(-50);}
+            child.setCollideWorldBounds(true);
+            child.setBounce(1,0);
+        }, this);
+        this.physics.add.collider(this.enemies,this.platforms, hitPlatformEnemy,null, this);
         this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
 
         scoreText = this.add.text(20,20,'Score:0',{ fontSize: '32px', fill: '#ffffff' });
@@ -83,14 +86,20 @@ class Wave1 extends Phaser.Scene
                 this.player.body.setVelocity(this.player.body.velocity.x,0);
             }
         }
+
+        function hitPlatformEnemy(e, floor) {
+            if(e.body.touching.down && !e.body.touching.left && !e.body.touching.right) { //Collisions with just the bottom of the player don't cause y bounce
+                e.body.setVelocity(e.body.velocity.x,0);
+            }
+        }
         
         this.input.keyboard.on("keyup_X", function(event){
-            this.player.setVelocity(this.player.body.velocity.x, this.player.body.velocity.y - 100);
+            this.player.setVelocity(this.player.body.velocity.x, this.player.body.velocity.y - 70);
             this.move(true);
         }, this); 
     }
 
-    move(whenJumpPressed){
+    move(whenJumpPressed){ //player movement
         this.cursors = this.input.keyboard.createCursorKeys();
         if (this.cursors.left.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
@@ -115,9 +124,23 @@ class Wave1 extends Phaser.Scene
         }
     }       
 
+    enemyMove(){ //enemy random jumping
+        this.enemies.children.iterate(function (child) {
+            var z = Math.floor(Math.random() * 10);
+            if(z === 1){
+                child.setVelocity(child.body.velocity.x, child.body.velocity.y - 70);
+            }
+            if(child.body.velocity.y < - 150) {
+                child.setVelocityY(-150);
+            } else if(child.body.velocity.y > 150) {
+                child.setVelocityY(150);
+            }
+        }, this);
+    }
     update()
     {
        this.move(false);
+       this.enemyMove();
         //else
         //{
             //this.player.anims.play('turn');
