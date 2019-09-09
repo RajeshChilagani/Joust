@@ -25,7 +25,7 @@ class Wave1 extends Phaser.Scene
         this.platforms.create(100, 400, 'platform');
         
         this.player = this.physics.add.sprite(100,450,'player');
-        this.player.setBounce(1,1);
+        this.player.setBounce(1,.7);
         this.player.setCollideWorldBounds(true);
 
         this.anims.create({
@@ -122,6 +122,8 @@ class Wave1 extends Phaser.Scene
 
             this.player.anims.play('right', true);
         }
+        if(this.player.body.velocity.y > 250) {this.player.setVelocityY(250);}
+        if(this.player.body.velocity.y < -250) {this.player.setVelocityY(-250);}
     }       
 
     enemyMove(){ //enemy random jumping
