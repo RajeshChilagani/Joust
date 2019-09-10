@@ -20,6 +20,9 @@ class Wave1 extends Phaser.Scene
         let scoreText;
         let gameOverText;
         let isGameover = false;
+        let playerHeight=85;
+        let playerWidth=90;
+        let playerScale=0.55;
         this.platforms = this.physics.add.staticGroup();
         this.platforms.create(350, 568, 'baseplatform').setScale(2).refreshBody();
         this.platforms.create(100, 150, 'platform');
@@ -29,7 +32,7 @@ class Wave1 extends Phaser.Scene
         this.platforms.create(100, 400, 'platform');
         //Player
         this.player = this.physics.add.sprite(100,450,'player');
-        this.player.setScale(0.555);
+        this.player.setScale(playerScale);
         this.player.setBounce(1,.7);
         this.player.setCollideWorldBounds(true);
         this.anims.create({
@@ -77,20 +80,21 @@ class Wave1 extends Phaser.Scene
 
         function CheckCollision(player,enemy)
         {
-            console.log(player.y+48,enemy.y);
-            if(player.y+10 > enemy.y)
-            {
-                player.disableBody(true,true);
-                isGameover=true;
-                scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
-            }
-            else if(player.y<enemy.y)
+            console.log(player.y+24,enemy.y);
+           if(player.y+playerHeight*playerScale-5<enemy.y)
            {
                enemy.disableBody(true,true);
                score+=1;
                scoreText.setText('Score: ' + score);
-           } 
-           
+           }
+           if(player.y+playerHeight*playerScale-5>enemy.y)
+           {
+               player.disableBody(true,true);
+               isGameover=true;
+               scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
+
+
+           }
         }
         console.log(isGameover);
         if(isGameover)
