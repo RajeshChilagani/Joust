@@ -28,7 +28,10 @@ class Wave1 extends Phaser.Scene
         this.platforms = this.physics.add.staticGroup();
         this.cursors = this.input.keyboard.createCursorKeys();
         //Pong
-        this.pong= this.physics.add.sprite(400,550,'pong');
+      
+        
+        this.pong= this.physics.add.sprite(400,600-9.5,'pong');
+        console.log(this.pong.displayHeight)
         this.pong.setBounce(1,.7);
         this.pong.setCollideWorldBounds(true);
         //this.platforms.create(350, 568, 'baseplatform').setScale(2).refreshBody();
@@ -111,7 +114,7 @@ class Wave1 extends Phaser.Scene
         }
         function CheckCollision(player,enemy)
         {
-            console.log(player.y+24,enemy.y);
+           // console.log(player.y+24,enemy.y);
            if(player.y+playerHeight*playerScale-5<enemy.y)
            {
                enemy.disableBody(true,true);
@@ -168,7 +171,9 @@ class Wave1 extends Phaser.Scene
     }
     move(whenJumpPressed){ //player movement
        
-        if (this.cursors.left.isDown && (this.player.body.touching.down || whenJumpPressed))
+        this.Key_Z=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
+        this.Key_C=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C)
+        if(this.Key_Z.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
             this.player.setFlipX(true);
             if(this.player.body.velocity.x > -180 && this.player.body.velocity.x <= 0){
@@ -179,7 +184,7 @@ class Wave1 extends Phaser.Scene
 
             this.player.anims.play('left', true);
         }
-        if (this.cursors.right.isDown && (this.player.body.touching.down || whenJumpPressed))
+        if(this.Key_C.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
             this.player.setFlipX(false);
             if(this.player.body.velocity.x < 180 && this.player.body.velocity.x >= 0){
@@ -228,12 +233,29 @@ class Wave1 extends Phaser.Scene
             
         }, this);
     }
+        movePong()
+    {
+        
+        if (this.cursors.left.isDown)
+        {
+            this.pong.body.velocity.x+=-10;
+        }
+     
+        if (this.cursors.right.isDown )
+        {
+            this.pong.body.velocity.x+=10;
+        }
+
+    }
     update()
     {
         
        this.move(false);
        this.enemyMove();
        this.eggMove();
+        this.movePong();
+      // console.log(this.player.displayHeight/2+this.player.y)
+        if(this.player.displayHeight/2+this.player.y>=600){this.GameOver()}
         //else
         //{
             //this.player.anims.play('turn');
