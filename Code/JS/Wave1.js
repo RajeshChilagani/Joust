@@ -11,6 +11,7 @@ class Wave1 extends Phaser.Scene
         this.load.image('enemy','../Assets/enemy.png');
         this.load.image('pong','../Assets/pong.png');
         this.load.spritesheet('player','../Assets/Play.png',{frameWidth:90,frameHeight:85});
+        this.load.image('egg', '../Assets/egg.png')
     }
     create()
     {
@@ -67,6 +68,11 @@ class Wave1 extends Phaser.Scene
             key: 'enemy',
             repeat: 3,
         });
+
+        this.eggs = this.physics.add.group({
+            key: 'egg',
+            repeat: 3,
+        });
         
         this.enemies.children.iterate(function (child) { //sets initial position, velocity
             var z = Math.floor(Math.random() * 1) + 1;
@@ -78,12 +84,31 @@ class Wave1 extends Phaser.Scene
             child.setBounce(1,0);
             child.setScale(.75);
         }, this);
+
+        this.eggs.children.iterate(function (child) { //sets initial position, velocity
+            child.setScale(.3);
+            child.setCollideWorldBounds(true);
+            child.setBounce(.6,.6);
+            child.setDrag(3);
+            child.setState('invis');
+            child.disableBody(true, true);
+            
+        }, this);
+
         this.physics.add.collider(this.enemies,this.platforms, hitPlatformEnemy,null, this);
         this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
+        this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
+        this.physics.add.collider(this.player,this.eggs, hitEgg, null, this);
+        this.physics.add.collider(this.eggs,this.platforms);
+        this.physics.add.collider(this.enemies,this.enemies);
         //this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
 
         scoreText = this.add.text(20,20,'Score:0',{ fontSize: '32px', fill: '#ffffff' });
-
+        function hitEgg(player, egg) {
+            egg.disableBody(true,true);
+            score += 1;
+            scoreText.setText('Score: ' + score);
+        }
         function CheckCollision(player,enemy)
         {
             console.log(player.y+24,enemy.y);
@@ -114,6 +139,8 @@ class Wave1 extends Phaser.Scene
                 e.body.setVelocity(e.body.velocity.x,0);
             }
         }
+
+        
      
         this.input.keyboard.on("keyup_X", function(event){
             this.player.setVelocity(this.player.body.velocity.x, this.player.body.velocity.y - 70);
@@ -181,29 +208,11 @@ class Wave1 extends Phaser.Scene
             }
         }, this);
     }
-    movePong()
-    {
-        this.Key_Z=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
-        this.Key_C=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C)
-        if(this.Key_Z.isDown)
-        {
-            this.pong.body.velocity.x+=-10;
-        }
-        if(this.Key_C.isDown)
-        {
-            this.pong.body.velocity.x+=10;
-        }
-
-    }
-   
     update()
     {
         
        this.move(false);
        this.enemyMove();
-       this.movePong();
-       console.log(this.player.displayHeight+this.player.y)
-        if(this.player.displayHeight+this.player.y-16>=600){this.GameOver()}
         //else
         //{
             //this.player.anims.play('turn');
