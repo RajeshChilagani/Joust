@@ -10,6 +10,7 @@ class Wave1 extends Phaser.Scene
         this.load.image('platform','../Assets/platform1.png');
         this.load.image('enemy','../Assets/enemy.png');
         this.load.spritesheet('player','../Assets/Play.png',{frameWidth:90,frameHeight:85});
+        this.load.image('egg', '../Assets/egg.png')
     }
     create()
     {
@@ -54,11 +55,16 @@ class Wave1 extends Phaser.Scene
             frameRate: 16,
             repeat: -1
         });
-        this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
+        
        
 
        this.enemies = this.physics.add.group({
             key: 'enemy',
+            repeat: 3,
+        });
+
+        this.eggs = this.physics.add.group({
+            key: 'egg',
             repeat: 3,
         });
         
@@ -72,12 +78,31 @@ class Wave1 extends Phaser.Scene
             child.setBounce(1,0);
             child.setScale(.75);
         }, this);
+
+        this.eggs.children.iterate(function (child) { //sets initial position, velocity
+            child.setScale(.3);
+            child.setCollideWorldBounds(true);
+            child.setBounce(.6,.6);
+            child.setDrag(3);
+            child.setState('invis');
+            child.disableBody(true, true);
+            
+        }, this);
+
         this.physics.add.collider(this.enemies,this.platforms, hitPlatformEnemy,null, this);
         this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
+        this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
+        this.physics.add.collider(this.player,this.eggs, hitEgg, null, this);
+        this.physics.add.collider(this.eggs,this.platforms);
+        this.physics.add.collider(this.enemies,this.enemies);
         //this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
 
         scoreText = this.add.text(20,20,'Score:0',{ fontSize: '32px', fill: '#ffffff' });
-
+        function hitEgg(player, egg) {
+            egg.disableBody(true,true);
+            score += 1;
+            scoreText.setText('Score: ' + score);
+        }
         function CheckCollision(player,enemy)
         {
             console.log(player.y+24,enemy.y);
@@ -89,10 +114,12 @@ class Wave1 extends Phaser.Scene
            }
            if(player.y+playerHeight*playerScale-5>enemy.y)
            {
-               player.disableBody(true,true);
+              /* player.disableBody(true,true);
                isGameover=true;
-               scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
-
+               scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });*/
+               enemy.disableBody(true,true);
+               score+=1;
+               scoreText.setText('Score: ' + score);
 
            }
         }
@@ -112,6 +139,8 @@ class Wave1 extends Phaser.Scene
                 e.body.setVelocity(e.body.velocity.x,0);
             }
         }
+
+        
      
         this.input.keyboard.on("keyup_X", function(event){
             this.player.setVelocity(this.player.body.velocity.x, this.player.body.velocity.y - 70);
@@ -171,10 +200,31 @@ class Wave1 extends Phaser.Scene
             }
         }, this);
     }
+
+    eggMove(){
+        var i = 0;
+        this.eggs.children.iterate(function (child) {
+            var correspondingEnemy = this.enemies.children.getArray()[i];
+            if(correspondingEnemy.active){
+                child.setPosition(correspondingEnemy.x, correspondingEnemy.y);
+                child.setVelocity(correspondingEnemy.body.velocity.x, correspondingEnemy.body.velocity.y);
+
+            } else {
+                if(child.state === 'invis') {
+                    child.enableBody(false, child.x, child.y, true, true);
+                    child.setState('vis');
+                }
+            }
+            
+            i++;
+            
+        }, this);
+    }
     update()
     {
        this.move(false);
        this.enemyMove();
+       this.eggMove();
         //else
         //{
             //this.player.anims.play('turn');
