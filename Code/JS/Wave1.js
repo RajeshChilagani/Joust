@@ -15,7 +15,8 @@ class Wave1 extends Phaser.Scene
     {
         let score=0;
         let scoreText;
-
+        let gameOverText;
+        let isGameover = false;
         this.platforms = this.physics.add.staticGroup();
         this.platforms.create(350, 568, 'baseplatform').setScale(2).refreshBody();
         this.platforms.create(100, 150, 'platform');
@@ -31,7 +32,7 @@ class Wave1 extends Phaser.Scene
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
-            frameRate: 30,
+            frameRate: 10,
             repeat: -1
         });
         
@@ -44,7 +45,7 @@ class Wave1 extends Phaser.Scene
         this.anims.create({
             key: 'right',
             frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
-            frameRate: 30,
+            frameRate: 10,
             repeat: -1
         });
 
@@ -79,8 +80,20 @@ class Wave1 extends Phaser.Scene
                score+=1;
                scoreText.setText('Score: ' + score);
            }
+           if(player.y+24>enemy.y)
+           {
+               player.disableBody(true,true);
+               isGameover=true;
+               scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
+
+
+           }
         }
-        
+        console.log(isGameover);
+        if(isGameover)
+        {
+           this.enemies.remove(true);
+        }
         function hitPlatform(character, floor) {
             if(this.player.body.touching.down && !this.player.body.touching.left && !this.player.body.touching.right) { //Collisions with just the bottom of the player don't cause y bounce
                 this.player.body.setVelocity(this.player.body.velocity.x,0);
@@ -92,11 +105,16 @@ class Wave1 extends Phaser.Scene
                 e.body.setVelocity(e.body.velocity.x,0);
             }
         }
-        
+     
         this.input.keyboard.on("keyup_X", function(event){
             this.player.setVelocity(this.player.body.velocity.x, this.player.body.velocity.y - 70);
             this.move(true);
         }, this); 
+        this.input.keyboard.on("keyup_R", function(event){
+            isGameover=false;
+            this.player.disableBody(false,false);
+        }, this); 
+        
     }
 
     move(whenJumpPressed){ //player movement
