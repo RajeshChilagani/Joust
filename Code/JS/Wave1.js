@@ -114,12 +114,9 @@ class Wave1 extends Phaser.Scene
            }
            if(player.y+playerHeight*playerScale-5>enemy.y)
            {
-              /* player.disableBody(true,true);
+               player.disableBody(true,true);
                isGameover=true;
-               scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });*/
-               enemy.disableBody(true,true);
-               score+=1;
-               scoreText.setText('Score: ' + score);
+               scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
 
            }
         }
