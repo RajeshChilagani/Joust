@@ -13,7 +13,7 @@ class Wave1 extends Phaser.Scene
     }
     create()
     {
-        //reAL DIMENSIONs with .55 scale player, .75 scale enemy
+        //reAL DIMENSIONs with .55 scale player, .75 scale
         //55.5 x 35.25 Enemy
         //49.5 x 46.75 Player
         let score=0;
@@ -159,6 +159,11 @@ class Wave1 extends Phaser.Scene
                 child.setVelocityY(-150);
             } else if(child.body.velocity.y > 150) {
                 child.setVelocityY(150);
+            }
+            if(child.body.velocity.x > 0) {
+                child.setFlipX(false);
+            } else {
+                child.setFlipX(true);
             }
         }, this);
     }
