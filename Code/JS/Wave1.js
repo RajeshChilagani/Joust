@@ -208,11 +208,32 @@ class Wave1 extends Phaser.Scene
             }
         }, this);
     }
+
+    eggMove(){
+        var i = 0;
+        this.eggs.children.iterate(function (child) {
+            var correspondingEnemy = this.enemies.children.getArray()[i];
+            if(correspondingEnemy.active){
+                child.setPosition(correspondingEnemy.x, correspondingEnemy.y);
+                child.setVelocity(correspondingEnemy.body.velocity.x, correspondingEnemy.body.velocity.y);
+
+            } else {
+                if(child.state === 'invis') {
+                    child.enableBody(false, child.x, child.y, true, true);
+                    child.setState('vis');
+                }
+            }
+            
+            i++;
+            
+        }, this);
+    }
     update()
     {
         
        this.move(false);
        this.enemyMove();
+       this.eggMove();
         //else
         //{
             //this.player.anims.play('turn');
