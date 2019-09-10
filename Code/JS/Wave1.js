@@ -8,11 +8,14 @@ class Wave1 extends Phaser.Scene
        
         this.load.image('baseplatform','../Assets/baseplatform.png');
         this.load.image('platform','../Assets/platform1.png');
-        this.load.image('enemy','../Assets/star.png');
+        this.load.image('enemy','../Assets/enemy.png');
         this.load.spritesheet('player','../Assets/Play.png',{frameWidth:90,frameHeight:85});
     }
     create()
     {
+        //reAL DIMENSIONs with .55 scale player, .75 scale enemy
+        //55.5 x 35.25 Enemy
+        //49.5 x 46.75 Player
         let score=0;
         let scoreText;
         let gameOverText;
@@ -64,6 +67,7 @@ class Wave1 extends Phaser.Scene
             else {child.setVelocityX(-50);}
             child.setCollideWorldBounds(true);
             child.setBounce(1,0);
+            child.setScale(.75);
         }, this);
         this.physics.add.collider(this.enemies,this.platforms, hitPlatformEnemy,null, this);
         this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
@@ -73,21 +77,20 @@ class Wave1 extends Phaser.Scene
 
         function CheckCollision(player,enemy)
         {
-            console.log(player.y+24,enemy.y);
-           if(player.y+24<enemy.y)
+            console.log(player.y+48,enemy.y);
+            if(player.y+10 > enemy.y)
+            {
+                player.disableBody(true,true);
+                isGameover=true;
+                scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
+            }
+            else if(player.y<enemy.y)
            {
                enemy.disableBody(true,true);
                score+=1;
                scoreText.setText('Score: ' + score);
-           }
-           if(player.y+24>enemy.y)
-           {
-               player.disableBody(true,true);
-               isGameover=true;
-               scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
-
-
-           }
+           } 
+           
         }
         console.log(isGameover);
         if(isGameover)
