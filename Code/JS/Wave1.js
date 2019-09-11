@@ -34,10 +34,7 @@ class Wave1 extends Phaser.Scene
         this.cursors = this.input.keyboard.createCursorKeys();
         let isHitting = false;
         //Pong
-      
-        
         this.pong= this.physics.add.sprite(400,600-9.5,'pong');
-        console.log(this.pong.displayHeight)
         this.pong.setCollideWorldBounds(true);
         //this.platforms.create(350, 568, 'baseplatform').setScale(2).refreshBody();
         this.platforms.create(100, 150, 'platform');
