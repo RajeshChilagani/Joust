@@ -13,12 +13,16 @@ class Wave1 extends Phaser.Scene
         this.load.spritesheet('player','../Assets/Play.png',{frameWidth:90,frameHeight:85});
         this.load.spritesheet('playerfly','../Assets/player_fly.png',{frameWidth:90,frameHeight:70});
         this.load.image('egg', '../Assets/egg.png')
+        this.load.image('pterodactyl', '../Assets/pika.png');
     }
     create()
     {
         //reAL DIMENSIONs with .55 scale player, .75 scale enemy
         //55.5 x 35.25 Enemy
         //49.5 x 46.75 Player
+
+        this.time.addEvent({ delay: 10000, callback: this.pterodactylSpawn, callbackScope: this, repeat: 0, startAt: 0 });
+
         let score=0;
         let scoreText;
         let gameOverText;
@@ -85,8 +89,12 @@ class Wave1 extends Phaser.Scene
             repeat: 3,
         });
         
+        this.pterodactyls = this.physics.add.group({
+            key: 'pterodactyl'
+        });
+
         this.enemies.children.iterate(function (child) { //sets initial position, velocity
-            var z = Math.floor(Math.random() * 1) + 1;
+            var z = Math.floor(Math.random() * 2);
             child.setX(this.platforms.children.getArray()[z].body.x + 70); //70 hard code for center right now
             child.setY(this.platforms.children.getArray()[z].body.y - 20); //20 so above
             if(Math.random() < .5) {child.setVelocityX(50);}
@@ -104,6 +112,15 @@ class Wave1 extends Phaser.Scene
             child.setState('invis');
             child.disableBody(true, true);
             
+        }, this);
+
+        this.pterodactyls.children.iterate(function (child) { //sets initial position, velocity
+            child.setScale(.5);
+            child.setCollideWorldBounds(true);
+            child.setBounce(1,0);    
+            child.disableBody(true, true);      
+            child.setState('notSpawned'); 
+            child.body.setAllowGravity(false);
         }, this);
 
         this.physics.add.collider(this.enemies,this.platforms, hitPlatformEnemy,null, this);
@@ -247,7 +264,7 @@ class Wave1 extends Phaser.Scene
             var correspondingEnemy = this.enemies.children.getArray()[i];
             if(correspondingEnemy.active){
                 child.setPosition(correspondingEnemy.x, correspondingEnemy.y);
-                child.setVelocity(correspondingEnemy.body.velocity.x, correspondingEnemy.body.velocity.y);
+                child.setVelocity(correspondingEnemy.body.velocity.x + correspondingEnemy.y/10, correspondingEnemy.body.velocity.y);
 
             } else {
                 if(child.state === 'invis') {
@@ -274,6 +291,53 @@ class Wave1 extends Phaser.Scene
         }
 
     }
+
+    pterodactylSpawn(){
+        this.pterodactyls.children.iterate(function (child) {
+            child.setState('spawned');
+            child.enableBody(true, 700, 300, true, true);
+            child.setVelocity(70, 45);
+        }, this);
+    }
+
+    pterodactylMove(){
+        this.pterodactyls.children.iterate(function (child) {
+            if(child.state === 'spawned'){
+                var z = Math.floor(Math.random() * 200);
+                if(z === 0) {
+                    child.setVelocity(Math.floor(Math.random() * 50) + 20, Math.floor(Math.random() * 50) + 20);
+                    if(child.x < this.player.x) { //enemy to the left
+                        if(child.body.velocity.x < 0) {
+                            child.body.velocity.x *= -1;
+                        }
+                    } else { //enemy to the right
+                        if(child.body.velocity.x > 0) {
+                            child.body.velocity.x *= -1;
+                        }
+                    }
+
+                    if(child.y < this.player.y) { //enemy below
+                        if(child.body.velocity.y < 0) {
+                            child.body.velocity.y *= -1;
+                        }
+                    } else { //enemy to the right
+                        if(child.body.velocity.y > 0) {
+                            child.body.velocity.y *= -1;
+                        }
+                    }
+                    
+                    //child.body.setVelocity(child.x - this.player.x, child.x - this.player.x);
+                    //child.body.setVelocity(child.body.velocity.x - this.player.body.velocity.x, child.body.velocity.y);
+                    //child.rotation = Phaser.Math.Angle.Between(child.x, child.y, this.player.x, this.player.y);
+                }
+            }
+            if(child.body.velocity.x > 60){child.body.velocity.x = 60;}
+            if(child.body.velocity.y > 60){child.body.velocity.y = 60;}
+            if(child.body.velocity.x < -60){child.body.velocity.x = -60;}
+            if(child.body.velocity.y < -60){child.body.velocity.y = -60;}
+
+        }, this);
+    }
     update()
     {
         
@@ -283,6 +347,7 @@ class Wave1 extends Phaser.Scene
         this.movePong();
        console.log(this.player.displayHeight/2+this.player.y)
         if(this.player.displayHeight/2+this.player.y>=600){this.GameOver()}
+       this.pterodactylMove();
         //else
         //{
             //this.player.anims.play('turn');
