@@ -9,6 +9,8 @@ class Wave1 extends Phaser.Scene
         this.playerSpriteDirection="right"
         this.playerLives=5
         this.playerLivesText
+        this.IsPlayerImmune=true;
+        this.isAnyKeypressed=false;
     }
     preload()
     {
@@ -186,7 +188,7 @@ class Wave1 extends Phaser.Scene
             score+=1;
             scoreText.setText('Score: ' + score);
            } 
-           else 
+           else if(this.IsPlayerImmune==false) 
            {
             this.Lives();
            }
@@ -242,6 +244,8 @@ class Wave1 extends Phaser.Scene
             this.IsTouching=false;
             this.playAnim()
             this.IsOnground=false;
+            this.isAnyKeypressed==true
+            this.IsPlayerImmune=false
             this.move(true);
         }, this); 
         this.input.keyboard.on("keyup_R", function(event){
@@ -292,6 +296,8 @@ class Wave1 extends Phaser.Scene
        
         if (this.cursors.left.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
+            this.IsPlayerImmune=false
+            this.isAnyKeypressed==true
             this.player.setFlipX(true);
             this.playerSpriteDirection='left';
             if(this.player.body.velocity.x > -180 && this.player.body.velocity.x <= 0){
@@ -311,6 +317,8 @@ class Wave1 extends Phaser.Scene
         }
         if(this.cursors.right.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
+            this.IsPlayerImmune=false
+            this.isAnyKeypressed==true
             this.player.setFlipX(false);
             this.playerSpriteDirection='right';
             if(this.player.body.velocity.x < 180 && this.player.body.velocity.x >= 0){
@@ -398,11 +406,15 @@ class Wave1 extends Phaser.Scene
         this.Key_C=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C)
         if (this.Key_Z.isDown)
         {
+            this.IsPlayerImmune=false
+            this.isAnyKeypressed==true
             this.pong.body.velocity.x+=-10;
         }
      
         else if (this.Key_C.isDown )
         {
+            this.IsPlayerImmune=false
+            this.isAnyKeypressed==true
             this.pong.body.velocity.x+=10;
         }
         else
@@ -484,10 +496,14 @@ class Wave1 extends Phaser.Scene
         if(this.playerLives>0)
         {
             this.playerLives--;
+            if( this.isAnyKeypressed==false)
+            {
+                this.IsPlayerImmune=true;
+            }
             this.player.anims.play('idle',true)
             this.player.body.velocity.x=0;
             this.player.body.velocity.y=0;
-            this.player.setPosition(400,600-this.pong.displayHeight-(this.player.displayHeight)*0.55)
+            this.player.setPosition(400,600-this.pong.displayHeight-(this.player.displayHeight)/2)
             this.playerLivesText.setText('Lives: ' + this.playerLives);
         }
         if(this.playerLives==0)
@@ -505,7 +521,10 @@ class Wave1 extends Phaser.Scene
        if(this.player.displayHeight/2+this.player.y>=600)
        {
             
-           this.Lives();
+            if(this.IsPlayerImmune==false)
+            {
+                this.Lives();
+            }
         }
        
        this.pterodactylMove();
