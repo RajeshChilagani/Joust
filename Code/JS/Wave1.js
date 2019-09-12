@@ -14,6 +14,7 @@ class Wave1 extends Phaser.Scene
         this.UIScale=1;
         this.scoreText
         this.score=0
+        this.isGameover=false
     }
     preload()
     {
@@ -22,8 +23,7 @@ class Wave1 extends Phaser.Scene
         this.load.image('background', '../Assets/background.png')
         this.load.image('platform','../Assets/platform1.png');
         this.load.image('enemy','../Assets/enemy.png');
-        this.load.image('pong','../Assets/paddle.png');
-        this.load.image('score','../Assets/Score.png');
+        this.load.image('pong','../Assets/pong_new.png');
         this.load.spritesheet('player','../Assets/Play.png',{frameWidth:90,frameHeight:85});
         this.load.spritesheet('playerfly','../Assets/fly.png',{frameWidth:90,frameHeight:85});
         this.load.spritesheet('eggShake','../Assets/egg_shake.png',{frameWidth:256/4,frameHeight:70});
@@ -56,16 +56,9 @@ class Wave1 extends Phaser.Scene
         this.pong.setScale(this.UIScale);
 
     //UI
-        this.UI = this.physics.add.staticGroup();
-        console.log(this.pong.getTopLeft().x,this.pong.getTopLeft().y)
-        this.UI.create(this.pong.getTopLeft().x+100, this.pong.getTopLeft().y+9, 'score');
-        //this.UI.create(this.pong.getTopLeft().x+100, this.pong.getTopLeft().y+9, 'score');
-        this.UI.children.iterate(function (child){
-            child.setScale(this.UIScale);
-
-        },this)
-        this.scoreText = this.add.text(this.pong.getTopLeft().x+150,this.pong.getTopLeft().y-7,this.score,{ fontSize: '32px', fontFamily: '"Roboto Condensed"' ,fill: '#FF8833' });
-        this.playerLivesText=this.add.text(this.pong.getTopLeft().x+250,this.pong.getTopLeft().y-7,'Lives: '+this.playerLives,{ fontSize: '32px', fontFamily: '"Roboto Condensed"' ,fill: '#FF8833' });
+    
+        this.scoreText = this.add.text(this.pong.getCenter().x,this.pong.getCenter().y-75/1.6,this.score,{ fontSize: '32px', fontFamily: '"Roboto Condensed"' ,fill: '#FF8833' });
+        this.playerLivesText = this.add.text(this.pong.getCenter().x,this.pong.getCenter().y-75/1.6,this.playerLives,{ fontSize: '32px', fontFamily: '"Roboto Condensed"' ,fill: '#FF8833' });
     //Platforms
         //this.platforms.create(350, 568, 'baseplatform').setScale(2).refreshBody();
         this.platforms.create(100, 150, 'platform');
@@ -217,12 +210,15 @@ class Wave1 extends Phaser.Scene
         }
 
         function checkCollisionPterodactyl(player, pterodactyl){
-            if(Math.abs(this.player.body.velocity.x) + Math.abs(this.player.body.velocity.y) > 500){
-                pterodactyl.disableBody(true,true);
-                this.score+=3;
-                this.scoreText.setText(this.score);
-            } else {
-                this.Lives();
+            if(this.IsPlayerImmune==false)
+            {
+                if(Math.abs(this.player.body.velocity.x) + Math.abs(this.player.body.velocity.y) > 500){
+                    pterodactyl.disableBody(true,true);
+                    this.score+=3;
+                    this.scoreText.setText(this.score);
+                } else {
+                    this.Lives();
+                }
             }
 
         }
@@ -433,6 +429,8 @@ class Wave1 extends Phaser.Scene
         {
             this.pong.body.velocity.x=0;
         }
+        this.scoreText.setPosition(this.pong.getCenter().x-476/5,this.pong.getCenter().y-75/3);
+        this.playerLivesText.setPosition(this.pong.getCenter().x+476/3.5,this.pong.getCenter().y-75/3);
 
     }
 
@@ -495,12 +493,12 @@ class Wave1 extends Phaser.Scene
     }
     GameOver()
     {
-       
+       this.isGameover=true;
         this.player.disableBody(true,true);
         this.enemies.children.iterate(function (child) { //sets initial position, velocity
             child.disableBody(true,true);
         }, this);
-        this.scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
+        //this.scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
     }
     Lives()
     {
@@ -515,7 +513,7 @@ class Wave1 extends Phaser.Scene
             this.player.body.velocity.x=0;
             this.player.body.velocity.y=0;
             this.player.setPosition(400,600-this.pong.displayHeight-(this.player.displayHeight)/2)
-            this.playerLivesText.setText('Lives: ' + this.playerLives);
+            this.playerLivesText.setText(this.playerLives);
         }
         if(this.playerLives==0)
         {
@@ -524,30 +522,31 @@ class Wave1 extends Phaser.Scene
     }
     Ui()
     {
-        this.scoreText.setPosition(this.pong.getTopLeft().x+150,this.pong.getTopLeft().y+14);
-        this.UI.children.iterate(function (child){
-            child.setPosition(this.pong.getTopLeft().x+100, this.pong.getTopLeft().y+30);
-
-        },this)
+        console.log(this.pong.getCenter().x)
+        
+        //this.playerLivesText.setPosition(this.pong.getTopRight().x-100,this.pong.getTopLeft().y+14);
     }
     update()
     {
-       this.move(false);
-       this.enemyMove();
-       this.eggMove();
-       this.movePong();
-       this.Ui()
-       //console.log(this.player.displayHeight/2+this.player.y)
-       if(this.player.displayHeight/2+this.player.y>=600)
-       {
+        if(!this.isGameover)
+        {
+            this.Ui()
+            this.move(false);
+            this.enemyMove();
+            this.eggMove();
+            this.movePong();
             
-            if(this.IsPlayerImmune==false)
+            //console.log(this.player.displayHeight/2+this.player.y)
+            if(this.player.displayHeight/2+this.player.y>=600)
             {
-                this.Lives(this.pong.getTopLeft().x+150,this.pong.getTopLeft().y-7,this.score);
-            }
+                
+                if(this.IsPlayerImmune==false)
+                {
+                    this.Lives(this.pong.getTopLeft().x+150,this.pong.getTopLeft().y-7,this.score);
+                }
+            }   
+            this.pterodactylMove();
         }
-       
-       this.pterodactylMove();
        
     }
     
