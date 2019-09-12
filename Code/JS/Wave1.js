@@ -7,6 +7,7 @@ class Wave1 extends Phaser.Scene
     {
        
         //this.load.image('baseplatform','../Assets/baseplatform.png');
+        this.load.image('background', '../Assets/background.png')
         this.load.image('platform','../Assets/platform1.png');
         this.load.image('enemy','../Assets/enemy.png');
         this.load.image('pong','../Assets/pong.png');
@@ -22,6 +23,8 @@ class Wave1 extends Phaser.Scene
         //49.5 x 46.75 Player
 
         this.time.addEvent({ delay: 10000, callback: this.pterodactylSpawn, callbackScope: this, repeat: 0, startAt: 0 });
+        var background = this.add.image(256*1.75, 192*1.6, 'background');
+        background.setScale(1.75, 1.6);
 
         let score=0;
         let scoreText;
@@ -126,6 +129,7 @@ class Wave1 extends Phaser.Scene
         this.physics.add.collider(this.player,this.eggs, hitEgg, null, this);
         this.physics.add.collider(this.eggs,this.platforms);
         this.physics.add.collider(this.enemies,this.enemies);
+        this.physics.add.overlap(this.player, this.pterodactyls, checkCollisionPterodactyl, null, this);
         //this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
 
         scoreText = this.add.text(20,20,'Score:0',{ fontSize: '32px', fill: '#ffffff' });
@@ -146,9 +150,13 @@ class Wave1 extends Phaser.Scene
            if(player.y+playerHeight*playerScale-5>enemy.y)
            {  
                 this.GameOver();
-
            }
         }
+
+        function checkCollisionPterodactyl(){
+            this.GameOver();
+        }
+
         if(isGameover)
         {
            this.enemies.remove(true);
@@ -185,6 +193,7 @@ class Wave1 extends Phaser.Scene
        
         
     }
+    
     GameOver()
     {
        
@@ -300,7 +309,7 @@ class Wave1 extends Phaser.Scene
     pterodactylMove(){
         this.pterodactyls.children.iterate(function (child) {
             if(child.state === 'spawned'){
-                var z = Math.floor(Math.random() * 200);
+                var z = Math.floor(Math.random() * 400);
                 if(z === 0) {
                     child.setVelocity(Math.floor(Math.random() * 50) + 20, Math.floor(Math.random() * 50) + 20);
                     if(child.x < this.player.x) { //enemy to the left
