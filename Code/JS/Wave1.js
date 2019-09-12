@@ -81,15 +81,15 @@ class Wave1 extends Phaser.Scene
         });
 
         this.enemies.children.iterate(function (child) { //sets initial position, velocity
-            var z = Math.floor(Math.random() * 4);
+            /*var z = Math.floor(Math.random() * 4);
             child.setX(this.platforms.children.getArray()[z].body.x + 70); //70 hard code for center right now
             child.setY(this.platforms.children.getArray()[z].body.y - 20); //20 so above
             if(Math.random() < .5) {child.setVelocityX(50);}
             else {child.setVelocityX(-50);}
             child.setCollideWorldBounds(true);
             child.setBounce(1,0);
-            child.setScale(.75);
-            //timerEvents.push(this.time.addEvent({ delay: 1000*, callback: this.spawnEnemy, callbackScope: this, args: [], loop: this.enemies.size}));
+            child.setScale(.75);*/
+            timerEvents.push(this.time.addEvent({ delay: 1000*this.enemies.children.getArray().indexOf(child), callback: this.spawnEnemy, callbackScope: this, args: [child]}));
         }, this);
 
 
@@ -164,7 +164,7 @@ class Wave1 extends Phaser.Scene
         this.physics.add.collider(this.enemies,this.platforms, hitPlatformEnemy,null, this);
         this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
         this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
-        this.physics.add.collider(this.player,this.eggs, hitEgg, null, this);
+        this.physics.add.overlap(this.player,this.eggs, hitEgg, null, this);
         this.physics.add.collider(this.eggs,this.platforms);
         this.physics.add.collider(this.enemies,this.enemies);
         this.physics.add.collider(this.pterodactyls,this.platforms);
@@ -202,8 +202,15 @@ class Wave1 extends Phaser.Scene
            }*/
         }
 
-        function checkCollisionPterodactyl(){
-            this.Lives();
+        function checkCollisionPterodactyl(player, pterodactyl){
+            if(Math.abs(this.player.body.velocity.x) + Math.abs(this.player.body.velocity.y) > 500){
+                pterodactyl.disableBody(true,true);
+                score+=3;
+                scoreText.setText('Score: ' + score);
+            } else {
+                this.Lives();
+            }
+
         }
 
         function hitPlatform() {
@@ -288,9 +295,17 @@ class Wave1 extends Phaser.Scene
             this.player.setFlipX(true);
             this.playerSpriteDirection='left';
             if(this.player.body.velocity.x > -180 && this.player.body.velocity.x <= 0){
-                this.player.setVelocityX(this.player.body.velocity.x-2);
+                if(whenJumpPressed){
+                    this.player.setVelocityX(this.player.body.velocity.x-4);
+                } else {
+                    this.player.setVelocityX(this.player.body.velocity.x-2);
+                }
             } else if (this.player.body.velocity.x > 0){
-                this.player.setVelocityX(this.player.body.velocity.x-5);
+                if(whenJumpPressed){
+                    this.player.setVelocityX(this.player.body.velocity.x-10);
+                } else {
+                    this.player.setVelocityX(this.player.body.velocity.x-5);
+                }
             }
             this.playAnim()
         }
@@ -299,9 +314,17 @@ class Wave1 extends Phaser.Scene
             this.player.setFlipX(false);
             this.playerSpriteDirection='right';
             if(this.player.body.velocity.x < 180 && this.player.body.velocity.x >= 0){
-                this.player.setVelocityX(this.player.body.velocity.x+2);
+                if(whenJumpPressed){
+                    this.player.setVelocityX(this.player.body.velocity.x+4);
+                } else {
+                    this.player.setVelocityX(this.player.body.velocity.x+2);
+                }
             } else if (this.player.body.velocity.x < 0){
-                this.player.setVelocityX(this.player.body.velocity.x+5);
+                if(whenJumpPressed){
+                    this.player.setVelocityX(this.player.body.velocity.x+10);
+                } else {
+                    this.player.setVelocityX(this.player.body.velocity.x+5);
+                }
             }
             this.playAnim()
 
@@ -309,12 +332,14 @@ class Wave1 extends Phaser.Scene
         }
         if(this.player.body.velocity.y > 250) {this.player.setVelocityY(250);}
         if(this.player.body.velocity.y < -250) {this.player.setVelocityY(-250);}
+        if(this.player.body.velocity.x > 750) {this.player.setVelocityX(750);}
+        if(this.player.body.velocity.x < -750) {this.player.setVelocityX(-750);}
     }       
 
     enemyMove(){ //enemy random jumping
         this.enemies.children.iterate(function (child) {
             child.anims.play('enemyFly', true);
-            var z = Math.floor(Math.random() * 12);
+            var z = Math.floor(Math.random() * 13);
             if(z === 1){
                 child.setVelocity(child.body.velocity.x, child.body.velocity.y - 50);
             }
@@ -432,6 +457,17 @@ class Wave1 extends Phaser.Scene
             if(child.body.velocity.y < -60){child.body.velocity.y = -60;}
 
         }, this);
+    }
+
+    spawnEnemy(child){
+        var z = Math.floor(Math.random() * 4);
+            child.setX(this.platforms.children.getArray()[z].body.x + 70); //70 hard code for center right now
+            child.setY(this.platforms.children.getArray()[z].body.y - 20); //20 so above
+            if(Math.random() < .5) {child.setVelocityX(50);}
+            else {child.setVelocityX(-50);}
+            child.setCollideWorldBounds(true);
+            child.setBounce(1,0);
+            child.setScale(.75)
     }
     GameOver()
     {
