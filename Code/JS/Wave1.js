@@ -159,7 +159,7 @@ class Wave1 extends Phaser.Scene
         this.physics.add.overlap(this.player, this.pterodactyls, checkCollisionPterodactyl, null, this);
         //this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
 
-        
+        scoreText = this.add.text(20,20,'Score:0',{ fontSize: '32px', fill: '#ffffff' });
         function hitEgg(player, egg) {
             egg.disableBody(true,true);
             score += 1;
@@ -167,14 +167,13 @@ class Wave1 extends Phaser.Scene
         }
         function CheckCollision(player,enemy)
         {
-           // console.log(player.y+24,enemy.y);
-           if(player.y+playerHeight*playerScale-5<enemy.y)
+           if(player.y+player.displayHeight*playerScale-5<enemy.y)
            {
                enemy.disableBody(true,true);
                score+=1;
                scoreText.setText('Score: ' + score);
            }
-           if(player.y+playerHeight*playerScale-5>enemy.y)
+           if(player.y+player.displayHeight*playerScale-5>enemy.y)
            {  
                 this.GameOver();
            }
@@ -205,6 +204,9 @@ class Wave1 extends Phaser.Scene
             this.player.body.setVelocity(this.player.body.velocity.x,this.player.body.velocity.y);
             }
         }
+
+        
+     
         this.input.keyboard.on("keyup_X", function(event){
             this.player.setVelocity(this.player.body.velocity.x, this.player.body.velocity.y -70);
             this.IsTouching=false;
@@ -213,7 +215,7 @@ class Wave1 extends Phaser.Scene
             this.move(true);
         }, this); 
         this.input.keyboard.on("keyup_R", function(event){
-            isGameover=false;
+           
             this.player.disableBody(false,false);
         }, this);
         
@@ -265,9 +267,9 @@ class Wave1 extends Phaser.Scene
             this.player.setFlipX(true);
             this.playerSpriteDirection='left';
             if(this.player.body.velocity.x > -180 && this.player.body.velocity.x <= 0){
-                this.player.setVelocityX(this.player.body.velocity.x-5);
+                this.player.setVelocityX(this.player.body.velocity.x-2);
             } else if (this.player.body.velocity.x > 0){
-                this.player.setVelocityX(this.player.body.velocity.x-10);
+                this.player.setVelocityX(this.player.body.velocity.x-5);
             }
             this.playAnim()
            
@@ -277,9 +279,9 @@ class Wave1 extends Phaser.Scene
             this.player.setFlipX(false);
             this.playerSpriteDirection='right';
             if(this.player.body.velocity.x < 180 && this.player.body.velocity.x >= 0){
-                this.player.setVelocityX(this.player.body.velocity.x+5);
+                this.player.setVelocityX(this.player.body.velocity.x+2);
             } else if (this.player.body.velocity.x < 0){
-                this.player.setVelocityX(this.player.body.velocity.x+10);
+                this.player.setVelocityX(this.player.body.velocity.x+5);
             }
             this.playAnim()
 
@@ -408,6 +410,16 @@ class Wave1 extends Phaser.Scene
             if(child.body.velocity.y < -60){child.body.velocity.y = -60;}
 
         }, this);
+    }
+    GameOver()
+    {
+       
+        this.player.disableBody(true,true);
+        this.enemies.children.iterate(function (child) { //sets initial position, velocity
+            child.disableBody(true,true);
+        }, this);
+        this.scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
+        this.pong.disableBody(true,true);
     }
     update()
     {
