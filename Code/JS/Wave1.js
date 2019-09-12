@@ -1,5 +1,7 @@
+var timerEvents = [];
 class Wave1 extends Phaser.Scene
 {
+    
     constructor(){
         super({key:"LoadSprite"});
         this.IsTouching=true;
@@ -16,6 +18,8 @@ class Wave1 extends Phaser.Scene
         this.load.image('pong','../Assets/platform.png');
         this.load.spritesheet('player','../Assets/Play.png',{frameWidth:90,frameHeight:85});
         this.load.spritesheet('playerfly','../Assets/player_fly.png',{frameWidth:137.75,frameHeight:85});
+        this.load.spritesheet('eggShake','../Assets/egg_shake.png',{frameWidth:256/4,frameHeight:70});
+        this.load.spritesheet('eggHatch','../Assets/egg_hatch.png',{frameWidth:256/4,frameHeight:70});
         this.load.image('egg', '../Assets/egg.png')
         this.load.image('pterodactyl', '../Assets/pika.png');
     }
@@ -57,7 +61,18 @@ class Wave1 extends Phaser.Scene
         this.player = this.physics.add.sprite(400,600-this.pong.displayHeight-(playerHeight/2)*playerScale,'player');
         this.player.setScale(playerScale);
         this.player.setBounce(1,.7);
-        this.player.setCollideWorldBounds(true)
+        this.anims.create({
+            key: 'eggShake',
+            frames: this.anims.generateFrameNumbers('eggShake', { start: 0, end: 3 }),
+            frameRate: 16,
+            key: 'eggHatch',
+        this.anims.create({
+            repeat: -1
+        });
+            frames: this.anims.generateFrameNumbers('eggHatch', { start: 0, end: 3 }),
+            frameRate: 1,
+            repeat: 0
+        });
 
     //Enemies & Eggs
         this.enemies = this.physics.add.group({
@@ -280,6 +295,11 @@ class Wave1 extends Phaser.Scene
             } else if(child.body.velocity.y > 150) {
                 child.setVelocityY(150);
             }
+            if(child.body.velocity.x > 0) {
+                child.setFlipX(false);
+            } else {
+                child.setFlipX(true);
+            }
         }, this);
     }
 
@@ -295,6 +315,10 @@ class Wave1 extends Phaser.Scene
                 if(child.state === 'invis') {
                     child.enableBody(false, child.x, child.y, true, true);
                     child.setState('vis');
+                    console.log("TIMETIMEITMIEEMTE    " + this.time.now);
+                    timerEvents.push(this.time.addEvent({ delay: 4000, callback: this.preactivation, callbackScope: this, args: [correspondingEnemy, child]}));
+                    child.anims.play('eggShake'); 
+                   // var timedEvent = this.time.delayedCall(this.time.now+3000, this.activateEnemy(correspondingEnemy), [], this);//correspondingEnemy.active
                 }
             }
             
@@ -302,6 +326,19 @@ class Wave1 extends Phaser.Scene
             
         }, this);
     }
+    preactivation(correspondingEnemy, child){ //if you have any better implemenentations I'm all ears
+        child.anims.play('eggHatch'); 
+        timerEvents.push(this.time.addEvent({ delay: 4000, callback: this.activateEnemy, args: [correspondingEnemy, child]}));
+    }
+    activateEnemy(correspondingEnemy,child) {
+        if(child.active){
+            correspondingEnemy.enableBody(true, child.x, child.y, true, true);
+            if(Math.random() < .5) {correspondingEnemy.setVelocityX(50);}
+            else {correspondingEnemy.setVelocityX(-50);}
+            child.disableBody(true, true);
+        }
+    }
+
     movePong()
     {
         
