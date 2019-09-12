@@ -177,6 +177,7 @@ class Wave1 extends Phaser.Scene
         this.physics.add.collider(this.eggs,this.platforms);
         this.physics.add.collider(this.enemies,this.enemies);
         this.physics.add.collider(this.pterodactyls,this.platforms);
+        this.physics.add.collider(this.pterodactyls,this.pong);
         this.physics.add.overlap(this.player, this.pterodactyls, checkCollisionPterodactyl, null, this);
         //this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
         function hitEgg(player, egg) {
@@ -493,11 +494,12 @@ class Wave1 extends Phaser.Scene
     }
     GameOver()
     {
-       this.isGameover=true;
+        this.isGameover=true;
         this.player.disableBody(true,true);
         this.enemies.children.iterate(function (child) { //sets initial position, velocity
             child.disableBody(true,true);
         }, this);
+        this.LeaderBoard()
         //this.scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
     }
     Lives()
@@ -526,6 +528,32 @@ class Wave1 extends Phaser.Scene
         
         //this.playerLivesText.setPosition(this.pong.getTopRight().x-100,this.pong.getTopLeft().y+14);
     }
+    LeaderBoard()
+    {
+        function loadJSON(callback) {   
+
+            var xobj = new XMLHttpRequest();
+                xobj.overrideMimeType("application/json");
+            xobj.open('GET', '../LeaderBoard.json', true); // Replace 'my_data' with the path to your file
+            xobj.onreadystatechange = function () {
+                  if (xobj.readyState == 4 && xobj.status == "200") {
+                    // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+                    callback(xobj.responseText);
+                  }
+            };
+            xobj.send(null);  
+         }
+         loadJSON(function(response) {
+            // Parse JSON string into object
+             var LeaderBoard= JSON.parse(response);
+             LeaderBoard.HighScores.forEach(function(e){
+                 
+             })
+           //  console.log(this.score)
+              
+           });
+           
+    }
     update()
     {
         if(!this.isGameover)
@@ -535,6 +563,7 @@ class Wave1 extends Phaser.Scene
             this.enemyMove();
             this.eggMove();
             this.movePong();
+           
             
             //console.log(this.player.displayHeight/2+this.player.y)
             if(this.player.displayHeight/2+this.player.y>=600)
