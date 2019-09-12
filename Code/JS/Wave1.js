@@ -260,9 +260,7 @@ class Wave1 extends Phaser.Scene
     }
     move(whenJumpPressed){ //player movement
        
-        this.Key_Z=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
-        this.Key_C=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C)
-        if(this.Key_Z.isDown && (this.player.body.touching.down || whenJumpPressed))
+        if (this.cursors.left.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
             this.player.setFlipX(true);
             this.playerSpriteDirection='left';
@@ -272,9 +270,8 @@ class Wave1 extends Phaser.Scene
                 this.player.setVelocityX(this.player.body.velocity.x-5);
             }
             this.playAnim()
-           
         }
-        if(this.Key_C.isDown && (this.player.body.touching.down || whenJumpPressed))
+        if(this.cursors.right.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
             this.player.setFlipX(false);
             this.playerSpriteDirection='right';
@@ -348,13 +345,14 @@ class Wave1 extends Phaser.Scene
 
     movePong()
     {
-        
-        if (this.cursors.left.isDown)
+        this.Key_Z=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
+        this.Key_C=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C)
+        if (this.Key_Z.isDown)
         {
             this.pong.body.velocity.x+=-10;
         }
      
-        else if (this.cursors.right.isDown )
+        else if (this.Key_C.isDown )
         {
             this.pong.body.velocity.x+=10;
         }
