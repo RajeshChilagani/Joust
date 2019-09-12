@@ -2,6 +2,9 @@ class Wave1 extends Phaser.Scene
 {
     constructor(){
         super({key:"LoadSprite"});
+        this.IsTouching=true;
+        this.IsOnground=true;
+        this.playerSpriteDirection="right"
     }
     preload()
     {
@@ -9,9 +12,9 @@ class Wave1 extends Phaser.Scene
         //this.load.image('baseplatform','../Assets/baseplatform.png');
         this.load.image('platform','../Assets/platform1.png');
         this.load.image('enemy','../Assets/enemy.png');
-        this.load.image('pong','../Assets/pong.png');
+        this.load.image('pong','../Assets/platform.png');
         this.load.spritesheet('player','../Assets/Play.png',{frameWidth:90,frameHeight:85});
-        this.load.spritesheet('playerfly','../Assets/player_fly.png',{frameWidth:90,frameHeight:70});
+        this.load.spritesheet('playerfly','../Assets/player_fly.png',{frameWidth:137.75,frameHeight:85});
         this.load.image('egg', '../Assets/egg.png')
         this.load.image('pterodactyl', '../Assets/pika.png');
     }
@@ -22,61 +25,38 @@ class Wave1 extends Phaser.Scene
         //49.5 x 46.75 Player
 
         this.time.addEvent({ delay: 10000, callback: this.pterodactylSpawn, callbackScope: this, repeat: 0, startAt: 0 });
-
         let score=0;
         let scoreText;
-        let gameOverText;
+        scoreText = this.add.text(20,20,'Score:0',{ fontSize: '32px', fill: '#ffffff' });
         let isGameover = false;
         let playerHeight=85;
         let playerWidth=90;
         let playerScale=0.55;
         this.platforms = this.physics.add.staticGroup();
         this.cursors = this.input.keyboard.createCursorKeys();
-        let isHitting = false;
-        //Pong
-        this.pong= this.physics.add.sprite(400,600-9.5,'pong');
+       
+
+    //Pong
+        this.pong= this.physics.add.sprite(400,600-16,'pong');
         this.pong.setCollideWorldBounds(true);
+
+    //Platforms
         //this.platforms.create(350, 568, 'baseplatform').setScale(2).refreshBody();
         this.platforms.create(100, 150, 'platform');
         //this.platforms.create(400, 300, 'platform');
         //this.platforms.create(700, 150, 'platform');
         this.platforms.create(700, 400, 'platform');
         //this.platforms.create(100, 400, 'platform');
-        //Player
-        this.player = this.physics.add.sprite(400,600-9.5-32,'player');
+
+    //Player
+    
+        this.player = this.physics.add.sprite(400,600-this.pong.displayHeight-(playerHeight/2)*playerScale,'player');
         this.player.setScale(playerScale);
         this.player.setBounce(1,.7);
-        this.player.setCollideWorldBounds(true);
-        this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 8 }),
-            frameRate: 16,
-            repeat: -1
-        });
-        
-         this.anims.create({
-          key: 'turn',
-            frames: [ { key: 'player', frame: 4 } ],
-             frameRate: 20
-        });
-        
-        this.anims.create({
-            key: 'right',
-            
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 8 }),
-            frameRate: 16,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'fly',
-            frames: this.anims.generateFrameNumbers('playerfly', { start: 0, end: 4 }),
-            frameRate: 16,
-            repeat: -1
-        });
-        this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
-       this.physics.add.collider(this.player,this.pong);
+        this.player.setCollideWorldBounds(true)
 
-       this.enemies = this.physics.add.group({
+    //Enemies & Eggs
+        this.enemies = this.physics.add.group({
             key: 'enemy',
             repeat: 3,
         });
@@ -120,6 +100,32 @@ class Wave1 extends Phaser.Scene
             child.body.setAllowGravity(false);
         }, this);
 
+    //Animations
+        this.anims.create({
+            key: 'run',
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 8 }),
+            frameRate: 16,
+            repeat: -1
+        });
+        
+         this.anims.create({
+          key: 'idle',
+            frames: [ { key: 'player', frame: 4 } ],
+             frameRate: 20
+        });
+
+        this.anims.create({
+            key: 'fly',
+            frames: this.anims.generateFrameNumbers('playerfly', { start: 0, end: 4 }),
+            frameRate: 16,
+            repeat: -1
+        });
+
+    //Colliders
+        this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
+        this.physics.add.collider(this.player,this.pong,hitPong,null,this);
+        this.physics.add.collider(this.enemies,this.pong);
+        this.physics.add.collider(this.eggs,this.pong);
         this.physics.add.collider(this.enemies,this.platforms, hitPlatformEnemy,null, this);
         this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
         this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
@@ -128,7 +134,7 @@ class Wave1 extends Phaser.Scene
         this.physics.add.collider(this.enemies,this.enemies);
         //this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
 
-        scoreText = this.add.text(20,20,'Score:0',{ fontSize: '32px', fill: '#ffffff' });
+        
         function hitEgg(player, egg) {
             egg.disableBody(true,true);
             score += 1;
@@ -149,15 +155,10 @@ class Wave1 extends Phaser.Scene
 
            }
         }
-        if(isGameover)
-        {
-           this.enemies.remove(true);
-        }
         function hitPlatform() {
-            if(this.player.body.touching.down && !this.player.body.touching.left && !this.player.body.touching.right) { //Collisions with just the bottom of the player don't cause y bounce
-                
-            this.player.play('turn',true);
-            isHitting= true;
+            if(this.player.body.touching.down && !this.player.body.touching.left && !this.player.body.touching.right) { //Collisions with just the bottom of the player don't cause y bounce   
+            this.playAnim()
+            this.IsTouching=true;
             this.player.body.setVelocity(this.player.body.velocity.x,0);
             }
         }
@@ -166,24 +167,54 @@ class Wave1 extends Phaser.Scene
             if(e.body.touching.down && !e.body.touching.left && !e.body.touching.right) { //Collisions with just the bottom of the player don't cause y bounce
                 e.body.setVelocity(e.body.velocity.x,0);
             }
+        }  
+        function hitPong() {
+            
+            this.playAnim()
+            if(this.player.body.touching.down) { //Collisions with just the bottom of the player don't cause y bounce   
+            this.IsTouching=true;
+            this.player.body.setVelocity(this.player.body.velocity.x,this.player.body.velocity.y);
+            }
         }
-
-        
-     
         this.input.keyboard.on("keyup_X", function(event){
-           
-            this.player.setVelocity(this.player.body.velocity.x, this.player.body.velocity.y - 70);
-            this.player.anims.play('fly',true);
+            this.player.setVelocity(this.player.body.velocity.x, this.player.body.velocity.y -70);
+            this.IsTouching=false;
+            this.playAnim()
+            this.IsOnground=false;
             this.move(true);
         }, this); 
         this.input.keyboard.on("keyup_R", function(event){
             isGameover=false;
             this.player.disableBody(false,false);
-        }, this); 
-
-
-       
+        }, this);
         
+    }
+    playAnim()
+    {
+         if(this.playerSpriteDirection=='left')
+         {
+             this.player.setFlipX(true)     
+         }
+         else
+         {
+             this.player.setFlipX(false);
+         }
+        if(this.player.body.velocity.x==0)
+        {
+            this.player.anims.play('idle',true)
+        }
+        if(this.player.body.velocity.x>0 || this.player.body.velocity.x<0||this.player.body.velocity.y>0 || this.player.body.velocity.y<0)
+        {
+            if(this.IsTouching)
+            {
+                this.player.anims.play('run',true)
+            }
+            else
+            {
+                this.player.anims.play('fly',true)
+            }
+            
+        }
     }
     GameOver()
     {
@@ -198,42 +229,30 @@ class Wave1 extends Phaser.Scene
     }
     move(whenJumpPressed){ //player movement
        
-        
         this.Key_Z=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
         this.Key_C=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C)
         if(this.Key_Z.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
             this.player.setFlipX(true);
+            this.playerSpriteDirection='left';
             if(this.player.body.velocity.x > -180 && this.player.body.velocity.x <= 0){
                 this.player.setVelocityX(this.player.body.velocity.x-5);
             } else if (this.player.body.velocity.x > 0){
                 this.player.setVelocityX(this.player.body.velocity.x-10);
             }
-            if(this.isHitting)
-            {
-                this.player.anims.play('right',true);
-            }
-            else{
-                this.player.anims.play('fly',true);
-            }
-
-            
+            this.playAnim()
+           
         }
         if(this.Key_C.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
             this.player.setFlipX(false);
+            this.playerSpriteDirection='right';
             if(this.player.body.velocity.x < 180 && this.player.body.velocity.x >= 0){
                 this.player.setVelocityX(this.player.body.velocity.x+5);
             } else if (this.player.body.velocity.x < 0){
                 this.player.setVelocityX(this.player.body.velocity.x+10);
             }
-            if(this.isHitting)
-            {
-                this.player.anims.play('right',true);
-            }
-            else{
-                this.player.anims.play('fly',true);
-            }
+            this.playAnim()
 
             
         }
@@ -274,7 +293,7 @@ class Wave1 extends Phaser.Scene
             
         }, this);
     }
-        movePong()
+    movePong()
     {
         
         if (this.cursors.left.isDown)
@@ -282,9 +301,13 @@ class Wave1 extends Phaser.Scene
             this.pong.body.velocity.x+=-10;
         }
      
-        if (this.cursors.right.isDown )
+        else if (this.cursors.right.isDown )
         {
             this.pong.body.velocity.x+=10;
+        }
+        else
+        {
+            this.pong.body.velocity.x=0;
         }
 
     }
@@ -337,18 +360,13 @@ class Wave1 extends Phaser.Scene
     }
     update()
     {
-        
        this.move(false);
        this.enemyMove();
        this.eggMove();
-        this.movePong();
-       console.log(this.player.displayHeight/2+this.player.y)
-        if(this.player.displayHeight/2+this.player.y>=600){this.GameOver()}
+       this.movePong();
+       //console.log(this.player.displayHeight/2+this.player.y)
+       if(this.player.displayHeight/2+this.player.y>=600){this.GameOver()}
        this.pterodactylMove();
-        //else
-        //{
-            //this.player.anims.play('turn');
-        //}
        
     }
     
