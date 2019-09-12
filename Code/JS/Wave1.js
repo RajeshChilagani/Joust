@@ -15,11 +15,12 @@ class Wave1 extends Phaser.Scene
         this.load.image('background', '../Assets/background.png')
         this.load.image('platform','../Assets/platform1.png');
         this.load.image('enemy','../Assets/enemy.png');
-        this.load.image('pong','../Assets/platform.png');
+        this.load.image('pong','../Assets/baseplatform.png');
         this.load.spritesheet('player','../Assets/Play.png',{frameWidth:90,frameHeight:85});
         this.load.spritesheet('playerfly','../Assets/player_fly.png',{frameWidth:137.75,frameHeight:85});
         this.load.spritesheet('eggShake','../Assets/egg_shake.png',{frameWidth:256/4,frameHeight:70});
         this.load.spritesheet('eggHatch','../Assets/egg_hatch.png',{frameWidth:256/4,frameHeight:70});
+        this.load.spritesheet('enemyFly','../Assets/enemy_fly.png',{frameWidth:60,frameHeight:55});
         this.load.image('egg', '../Assets/egg.png')
         this.load.image('pterodactyl', '../Assets/pika.png');
     }
@@ -61,7 +62,7 @@ class Wave1 extends Phaser.Scene
         this.player = this.physics.add.sprite(400,600-this.pong.displayHeight-(playerHeight/2)*playerScale,'player');
         this.player.setScale(playerScale);
         this.player.setCollideWorldBounds(true);
-        this.player.setBounce(1,.7);
+        this.player.setBounce(1.2,.7);
         
     //Enemies & Eggs
         this.enemies = this.physics.add.group({
@@ -87,7 +88,9 @@ class Wave1 extends Phaser.Scene
             child.setCollideWorldBounds(true);
             child.setBounce(1,0);
             child.setScale(.75);
+            //timerEvents.push(this.time.addEvent({ delay: 1000*, callback: this.spawnEnemy, callbackScope: this, args: [], loop: this.enemies.size}));
         }, this);
+
 
         this.eggs.children.iterate(function (child) { //sets initial position, velocity
             child.setScale(.3);
@@ -126,7 +129,8 @@ class Wave1 extends Phaser.Scene
             key: 'fly',
             frames: this.anims.generateFrameNumbers('playerfly', { start: 0, end: 4 }),
             frameRate: 16,
-            repeat: -1
+            repeat: -1,
+            scale: .7
         });
 
         this.anims.create({
@@ -141,6 +145,13 @@ class Wave1 extends Phaser.Scene
             frames: this.anims.generateFrameNumbers('eggHatch', { start: 0, end: 3 }),
             frameRate: 1,
             repeat: 0
+        });
+
+        this.anims.create({
+            key: 'enemyFly',
+            frames: this.anims.generateFrameNumbers('enemyFly', { start: 0, end: 3 }),
+            frameRate: 16,
+            repeat: -1
         });
 
 
@@ -298,6 +309,7 @@ class Wave1 extends Phaser.Scene
 
     enemyMove(){ //enemy random jumping
         this.enemies.children.iterate(function (child) {
+            child.anims.play('enemyFly', true);
             var z = Math.floor(Math.random() * 12);
             if(z === 1){
                 child.setVelocity(child.body.velocity.x, child.body.velocity.y - 50);
