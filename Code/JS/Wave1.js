@@ -52,28 +52,17 @@ class Wave1 extends Phaser.Scene
         //this.platforms.create(350, 568, 'baseplatform').setScale(2).refreshBody();
         this.platforms.create(100, 150, 'platform');
         //this.platforms.create(400, 300, 'platform');
-        //this.platforms.create(700, 150, 'platform');
+        this.platforms.create(700, 150, 'platform');
         this.platforms.create(700, 400, 'platform');
-        //this.platforms.create(100, 400, 'platform');
+        this.platforms.create(100, 400, 'platform');
 
     //Player
     
         this.player = this.physics.add.sprite(400,600-this.pong.displayHeight-(playerHeight/2)*playerScale,'player');
         this.player.setScale(playerScale);
+        this.player.setCollideWorldBounds(true);
         this.player.setBounce(1,.7);
-        this.anims.create({
-            key: 'eggShake',
-            frames: this.anims.generateFrameNumbers('eggShake', { start: 0, end: 3 }),
-            frameRate: 16,
-            key: 'eggHatch',
-        this.anims.create({
-            repeat: -1
-        });
-            frames: this.anims.generateFrameNumbers('eggHatch', { start: 0, end: 3 }),
-            frameRate: 1,
-            repeat: 0
-        });
-
+        
     //Enemies & Eggs
         this.enemies = this.physics.add.group({
             key: 'enemy',
@@ -140,6 +129,21 @@ class Wave1 extends Phaser.Scene
             repeat: -1
         });
 
+        this.anims.create({
+            key: 'eggShake',
+            frames: this.anims.generateFrameNumbers('eggShake', { start: 0, end: 3 }),
+            frameRate: 16,
+            repeat: -1
+        });
+           
+        this.anims.create({
+            key: 'eggHatch',
+            frames: this.anims.generateFrameNumbers('eggHatch', { start: 0, end: 3 }),
+            frameRate: 1,
+            repeat: 0
+        });
+
+
     //Colliders
         this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
         this.physics.add.collider(this.player,this.pong,hitPong,null,this);
@@ -151,6 +155,7 @@ class Wave1 extends Phaser.Scene
         this.physics.add.collider(this.player,this.eggs, hitEgg, null, this);
         this.physics.add.collider(this.eggs,this.platforms);
         this.physics.add.collider(this.enemies,this.enemies);
+        this.physics.add.collider(this.pterodactyls,this.platforms);
         this.physics.add.overlap(this.player, this.pterodactyls, checkCollisionPterodactyl, null, this);
         //this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
 
@@ -286,7 +291,7 @@ class Wave1 extends Phaser.Scene
 
     enemyMove(){ //enemy random jumping
         this.enemies.children.iterate(function (child) {
-            var z = Math.floor(Math.random() * 15);
+            var z = Math.floor(Math.random() * 12);
             if(z === 1){
                 child.setVelocity(child.body.velocity.x, child.body.velocity.y - 50);
             }
