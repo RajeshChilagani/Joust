@@ -79,7 +79,7 @@ class Wave1 extends Phaser.Scene
         });
 
         this.enemies.children.iterate(function (child) { //sets initial position, velocity
-            var z = Math.floor(Math.random() * 2);
+            var z = Math.floor(Math.random() * 4);
             child.setX(this.platforms.children.getArray()[z].body.x + 70); //70 hard code for center right now
             child.setY(this.platforms.children.getArray()[z].body.y - 20); //20 so above
             if(Math.random() < .5) {child.setVelocityX(50);}
@@ -167,7 +167,15 @@ class Wave1 extends Phaser.Scene
         }
         function CheckCollision(player,enemy)
         {
-           if(player.y+player.displayHeight*playerScale-5<enemy.y)
+           // console.log(player.y+24,enemy.y);
+           if(player.getCenter().y < enemy.getCenter().y){
+            enemy.disableBody(true,true);
+            score+=1;
+            scoreText.setText('Score: ' + score);
+           } else {
+            this.GameOver();
+           }
+           /*if(player.y+playerHeight*playerScale-5<enemy.y)
            {
                enemy.disableBody(true,true);
                score+=1;
@@ -176,7 +184,7 @@ class Wave1 extends Phaser.Scene
            if(player.y+player.displayHeight*playerScale-5>enemy.y)
            {  
                 this.GameOver();
-           }
+           }*/
         }
 
         function checkCollisionPterodactyl(){
