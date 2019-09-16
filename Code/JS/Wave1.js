@@ -3,7 +3,7 @@ class Wave1 extends Phaser.Scene
 {
     
     constructor(){
-        super({key:"LoadSprite"});
+        super({key:"Wave1"});
         this.IsTouching=true;
         this.IsOnground=true;
         this.playerSpriteDirection="right"
@@ -29,8 +29,10 @@ class Wave1 extends Phaser.Scene
         this.load.spritesheet('eggShake','../Assets/egg_shake.png',{frameWidth:256/4,frameHeight:70});
         this.load.spritesheet('eggHatch','../Assets/egg_hatch.png',{frameWidth:256/4,frameHeight:70});
         this.load.spritesheet('enemyFly','../Assets/enemy_fly.png',{frameWidth:60,frameHeight:55});
+        this.load.spritesheet('enemy2','../Assets/enemy2.png',{frameWidth:90,frameHeight:85});
         this.load.image('egg', '../Assets/egg.png')
-        this.load.image('pterodactyl', '../Assets/pika.png');
+        this.load.image('Gameover', '../Assets/Gameover.png')
+        //this.load.image('pterodactyl', '../Assets/pika.png');
     }
     create()
     {
@@ -86,7 +88,7 @@ class Wave1 extends Phaser.Scene
         });
         
         this.pterodactyls = this.physics.add.group({
-            key: 'pterodactyl'
+            key: 'enemy2'
         });
 
         this.enemies.children.iterate(function (child) { //sets initial position, velocity
@@ -160,6 +162,13 @@ class Wave1 extends Phaser.Scene
         this.anims.create({
             key: 'enemyFly',
             frames: this.anims.generateFrameNumbers('enemyFly', { start: 0, end: 3 }),
+            frameRate: 16,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'enemy2',
+            frames: this.anims.generateFrameNumbers('enemy2', { start: 0, end: 4 }),
             frameRate: 16,
             repeat: -1
         });
@@ -445,6 +454,7 @@ class Wave1 extends Phaser.Scene
 
     pterodactylMove(){
         this.pterodactyls.children.iterate(function (child) {
+            child.anims.play('enemy2'); 
             if(child.state === 'spawned'){
                 var z = Math.floor(Math.random() * 400);
                 if(z === 0) {
@@ -500,6 +510,8 @@ class Wave1 extends Phaser.Scene
             child.disableBody(true,true);
         }, this);
         this.LeaderBoard()
+        this.GameoverImg=this.add.image(400,350,'Gameover');
+        this.GameoverImg.setScale(1.6);
         //this.scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
     }
     Lives()
