@@ -31,7 +31,6 @@ class Wave1 extends Phaser.Scene
         this.load.spritesheet('enemyFly','../Assets/enemy_fly.png',{frameWidth:60,frameHeight:55});
         this.load.spritesheet('enemy2','../Assets/enemy2.png',{frameWidth:90,frameHeight:85});
         this.load.image('egg', '../Assets/egg.png')
-        this.load.image('Gameover', '../Assets/Gameover.png')
         //this.load.image('pterodactyl', '../Assets/pika.png');
     }
     create()
@@ -168,7 +167,7 @@ class Wave1 extends Phaser.Scene
 
         this.anims.create({
             key: 'enemy2',
-            frames: this.anims.generateFrameNumbers('enemy2', { start: 0, end: 4 }),
+            frames: this.anims.generateFrameNumbers('enemy2', { start: 0, end: 3 }),
             frameRate: 16,
             repeat: -1
         });
@@ -298,17 +297,6 @@ class Wave1 extends Phaser.Scene
             }
             
         }
-    }
-    GameOver()
-    {
-       
-        this.player.disableBody(true,true);
-        this.enemies.children.iterate(function (child) { //sets initial position, velocity
-            child.disableBody(true,true);
-        }, this);
-        this.isGameover=true; 
-        //this.scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
-        this.pong.disableBody(true,true);
     }
     move(whenJumpPressed){ //player movement
        
@@ -454,7 +442,7 @@ class Wave1 extends Phaser.Scene
 
     pterodactylMove(){
         this.pterodactyls.children.iterate(function (child) {
-            child.anims.play('enemy2'); 
+            child.anims.play('enemy2',true); 
             if(child.state === 'spawned'){
                 var z = Math.floor(Math.random() * 400);
                 if(z === 0) {
@@ -504,15 +492,16 @@ class Wave1 extends Phaser.Scene
     }
     GameOver()
     {
-        this.isGameover=true;
+       
         this.player.disableBody(true,true);
         this.enemies.children.iterate(function (child) { //sets initial position, velocity
             child.disableBody(true,true);
         }, this);
-        this.LeaderBoard()
-        this.GameoverImg=this.add.image(400,350,'Gameover');
-        this.GameoverImg.setScale(1.6);
+        this.isGameover=true; 
         //this.scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
+        this.pong.disableBody(true,true);
+        this.scene.start('EndScreen')
+        
     }
     Lives()
     {
