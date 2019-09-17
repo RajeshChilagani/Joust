@@ -188,7 +188,7 @@ class Wave1 extends Phaser.Scene
         this.physics.add.collider(this.enemies,this.pong);
         this.physics.add.collider(this.eggs,this.pong);
         this.physics.add.collider(this.enemies,this.platforms, hitPlatformEnemy,null, this);
-        this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
+        //this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
         this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
         this.physics.add.overlap(this.player,this.eggs, hitEgg, null, this);
         this.physics.add.collider(this.eggs,this.platforms);
@@ -202,8 +202,16 @@ class Wave1 extends Phaser.Scene
             this.score += 1;
             this.scoreText.setText(this.score);
         }
+        /*
+        if(!this.IsPlayerImmune) {
+                var enemyCollider = this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
+            }
+            else{
+            }
+        */
         function CheckCollision(player,enemy)
         {
+            
            // console.log(player.y+24,enemy.y);
            if(player.getCenter().y < enemy.getCenter().y)
            {
@@ -308,7 +316,11 @@ class Wave1 extends Phaser.Scene
         }
     }
     move(whenJumpPressed){ //player movement
-       
+        if(!this.IsPlayerImmune) {
+            var enemyCollider = this.physics.add.collider(this.player,this.enemies,this.CheckCollision,null,this);
+        }
+        else{
+        }
         if (this.cursors.left.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
             this.IsPlayerImmune=false
@@ -357,6 +369,7 @@ class Wave1 extends Phaser.Scene
         if(this.player.body.velocity.y < -250) {this.player.setVelocityY(-250);}
         if(this.player.body.velocity.x > 750) {this.player.setVelocityX(750);}
         if(this.player.body.velocity.x < -750) {this.player.setVelocityX(-750);}
+        //if(this.IsPlayerImmune) { this.player.body.checkCollision.none = true;} else {this.player.body.checkCollision.none = true;}
     }       
 
     enemyMove(){ //enemy random jumping
@@ -417,7 +430,31 @@ class Wave1 extends Phaser.Scene
             child.disableBody(true, true);
         }
     }
-
+    CheckCollision(player,enemy)
+    {
+        
+       // console.log(player.y+24,enemy.y);
+       if(player.getCenter().y < enemy.getCenter().y)
+       {
+        enemy.disableBody(true,true);
+        this.score+=1;
+        this.scoreText.setText(this.score);
+       } 
+       else if(this.IsPlayerImmune==false) 
+       {
+        this.Lives();
+       }
+       /*if(player.y+playerHeight*playerScale-5<enemy.y)
+       {
+           enemy.disableBody(true,true);
+           score+=1;
+           scoreText.setText('Score: ' + score);
+       }
+       if(player.y+player.displayHeight*playerScale-5>enemy.y)
+       {  
+            this.GameOver();
+       }*/
+    }
     movePong()
     {
         this.Key_Z=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
@@ -478,7 +515,11 @@ class Wave1 extends Phaser.Scene
                             child.body.velocity.y *= -1;
                         }
                     }
-                    
+                    if(child.body.velocity.x > 0) {
+                        child.setFlipX(false);
+                    } else {
+                        child.setFlipX(true);
+                    }
                     //child.body.setVelocity(child.x - this.player.x, child.x - this.player.x);
                     //child.body.setVelocity(child.body.velocity.x - this.player.body.velocity.x, child.body.velocity.y);
                     //child.rotation = Phaser.Math.Angle.Between(child.x, child.y, this.player.x, this.player.y);
