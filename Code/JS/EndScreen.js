@@ -66,18 +66,17 @@ class EndScreen extends Phaser.Scene
                     }
                   ]
             }
-          
-            
-       this.lb.some(function(e){
-                if(e.score<final)
+            let temp = final
+            for(let i=0;i<3;i++)
+            { 
+                if(this.lb[i].score<temp)
                 {
-                   //let inputtext = this.add.text(300, 10, 'Please enter your name', { color: 'white', fontSize: '20px '});
-                    
-                    e.score=final;
-                    return true;
+                    let temptemp= this.lb[i].score
+                    this.lb[i].score=temp;
+                    temp=temptemp;
+
                 }
-                
-            })
+            }
            for(let i=0; i<3;i++)
            {
             this.Lb1 = this.add.text(300,100+(i+1)*50,this.lb[i].name,{ fontSize: '32px', fontFamily: '"Roboto Condensed"' ,fill: '#ffffff' });
