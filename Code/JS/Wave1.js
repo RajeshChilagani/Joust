@@ -4,7 +4,7 @@ class Wave1 extends Phaser.Scene
     
     constructor(){
         super({key:"Wave1"});
-        this.IsTouchingGround=true;
+        this.IsTouching=false;
         //this.IsOnground=true;
         this.playerSpriteDirection="right"
         this.playerLives=5
@@ -253,8 +253,8 @@ class Wave1 extends Phaser.Scene
 
         function hitPlatform() {
             if(this.player.body.touching.down && !this.player.body.touching.left && !this.player.body.touching.right) { //Collisions with just the bottom of the player don't cause y bounce   
-            this.playAnim()
             this.IsTouching=true;
+            this.playAnim();
             this.player.body.setVelocity(this.player.body.velocity.x,0);
             }
         }
@@ -266,10 +266,13 @@ class Wave1 extends Phaser.Scene
         }  
         function hitPong() {
             
-            this.playAnim()
+            
             if(this.player.body.touching.down) { //Collisions with just the bottom of the player don't cause y bounce   
             this.IsTouching=true;
             this.player.body.setVelocity(this.player.body.velocity.x,this.player.body.velocity.y);
+            }
+            else{
+                this.IsTouching=false;
             }
         }
 
@@ -588,6 +591,7 @@ class Wave1 extends Phaser.Scene
     {
         if(!this.isGameover)
         {
+            this.playAnim();
             this.Ui()
             this.move(false);
             this.enemyMove();
