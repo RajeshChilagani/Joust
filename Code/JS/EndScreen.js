@@ -19,7 +19,7 @@ class EndScreen extends Phaser.Scene
     }
     create()
     {
-        var text = this.add.text(300, 10, 'Please enter your name', { color: 'white', fontSize: '20px '});
+       /* var text = this.add.text(300, 10, 'Please enter your name', { color: 'white', fontSize: '20px '});
         var domElement = this.add.dom(300, 100).createFromCache('nameform')
         domElement.addListener('click');
         domElement.on('click',function(e){
@@ -28,7 +28,7 @@ class EndScreen extends Phaser.Scene
         {
             var inputText = this.getChildByName('fullname');
 
-            //  Have they entered anything?
+            //  Have they entered anythingAdding 
             if (inputText.value !== '')
             {
                 //  Turn off the click events
@@ -42,7 +42,7 @@ class EndScreen extends Phaser.Scene
             }
            
         }
-        })
+        })*/
         this.GameoverImg=this.add.image(400,350,'Gameover');
         this.GameoverImg.setScale(1.6);
         let final = this.finalScore

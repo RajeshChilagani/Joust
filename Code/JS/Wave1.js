@@ -4,8 +4,8 @@ class Wave1 extends Phaser.Scene
     
     constructor(){
         super({key:"Wave1"});
-        this.IsTouching=true;
-        this.IsOnground=true;
+        this.IsTouchingGround=true;
+        //this.IsOnground=true;
         this.playerSpriteDirection="right"
         this.playerLives=5
         this.playerLivesText
@@ -278,8 +278,7 @@ class Wave1 extends Phaser.Scene
         this.input.keyboard.on("keyup_X", function(event){
             this.player.setVelocity(this.player.body.velocity.x, this.player.body.velocity.y -70);
             this.IsTouching=false;
-            this.playAnim()
-            this.IsOnground=false;
+            this.playAnim();
             this.isAnyKeypressed==true
             this.IsPlayerImmune=false
             this.move(true);
