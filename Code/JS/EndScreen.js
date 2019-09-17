@@ -14,7 +14,6 @@ class EndScreen extends Phaser.Scene
     }
     preload()
     {
-        this.load.html('nameform', '../Name.html');
         this.load.image('Gameover', '../Assets/Gameover.png')
     }
     create()
@@ -49,8 +48,9 @@ class EndScreen extends Phaser.Scene
         if(localStorage)    
         {
             this.lb=JSON.parse(localStorage.getItem("lbs"))
-            if(JSON.stringify(this.lb)=='{}')
+            if(JSON.stringify(this.lb)==='null')
             {
+                console.log("error")
                  this.lb=  [
                     {
                       "name": "test",
