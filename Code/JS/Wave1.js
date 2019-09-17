@@ -46,7 +46,8 @@ class Wave1 extends Phaser.Scene
         let playerHeight=85;
         let playerWidth=90;
         let playerScale=0.55;
-        this.platforms = this.physics.add.staticGroup();
+        //this.platforms = this.physics.add.staticGroup();
+        this.platforms = this.physics.add.group();
         this.cursors = this.input.keyboard.createCursorKeys();
 
     
@@ -120,6 +121,14 @@ class Wave1 extends Phaser.Scene
             child.disableBody(true, true);      
             child.setState('notSpawned'); 
             child.body.setAllowGravity(false);
+        }, this);
+
+        this.platforms.children.iterate(function (child) { //sets initial position, velocity
+            child.body.setAllowGravity(false);
+            child.body.setImmovable(true);
+            //child.body.setAllowRotation(true);
+            //child.body.setMass(0.1);
+            //child.body.setAngularAcceleration(5);
         }, this);
 
     //Animations
