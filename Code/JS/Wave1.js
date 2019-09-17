@@ -100,6 +100,8 @@ class Wave1 extends Phaser.Scene
             child.setCollideWorldBounds(true);
             child.setBounce(1,0);
             child.setScale(.75);*/
+            child.setX(1000);
+            child.setY(1000);
             timerEvents.push(this.time.addEvent({ delay: 1000*this.enemies.children.getArray().indexOf(child), callback: this.spawnEnemy, callbackScope: this, args: [child]}));
         }, this);
 
@@ -188,7 +190,7 @@ class Wave1 extends Phaser.Scene
         this.physics.add.collider(this.enemies,this.pong);
         this.physics.add.collider(this.eggs,this.pong);
         this.physics.add.collider(this.enemies,this.platforms, hitPlatformEnemy,null, this);
-        this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
+        //this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
         this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
         this.physics.add.overlap(this.player,this.eggs, hitEgg, null, this);
         this.physics.add.collider(this.eggs,this.platforms);
@@ -196,7 +198,7 @@ class Wave1 extends Phaser.Scene
         this.physics.add.collider(this.pterodactyls,this.platforms);
         this.physics.add.collider(this.pterodactyls,this.pong);
         this.physics.add.overlap(this.player, this.pterodactyls, checkCollisionPterodactyl, null, this);
-        this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
+        //this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
         function hitEgg(player, egg) {
             egg.disableBody(true,true);
             this.score += 1;
@@ -316,11 +318,11 @@ class Wave1 extends Phaser.Scene
         }
     }
     move(whenJumpPressed){ //player movement
-        /*if(!this.IsPlayerImmune) {
+        if(!this.IsPlayerImmune) {
             var enemyCollider = this.physics.add.collider(this.player,this.enemies,this.CheckCollision,null,this);
         }
         else{
-        }*/
+        }
         if (this.cursors.left.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
             this.IsPlayerImmune=false
@@ -375,7 +377,7 @@ class Wave1 extends Phaser.Scene
     enemyMove(){ //enemy random jumping
         this.enemies.children.iterate(function (child) {
             child.anims.play('enemyFly', true);
-            var z = Math.floor(Math.random() * 8);
+            var z = Math.floor(Math.random() * 13);
             if(z === 1){
                 child.setVelocity(child.body.velocity.x, child.body.velocity.y - 50);
             }
@@ -539,6 +541,7 @@ class Wave1 extends Phaser.Scene
             child.setY(this.platforms.children.getArray()[z].body.y - 20); //20 so above
             if(Math.random() < .5) {child.setVelocityX(50);}
             else {child.setVelocityX(-50);}
+            child.setVelocityY(-10);
             child.setCollideWorldBounds(true);
             child.setBounce(1,0);
             child.setScale(.75)
