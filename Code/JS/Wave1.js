@@ -500,7 +500,7 @@ class Wave1 extends Phaser.Scene
         this.isGameover=true; 
         //this.scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
         this.pong.disableBody(true,true);
-        this.scene.start('EndScreen')
+        this.scene.start('EndScreen',{score:this.score})
         
     }
     Lives()
@@ -528,32 +528,6 @@ class Wave1 extends Phaser.Scene
         console.log(this.pong.getCenter().x)
         
         //this.playerLivesText.setPosition(this.pong.getTopRight().x-100,this.pong.getTopLeft().y+14);
-    }
-    LeaderBoard()
-    {
-        function loadJSON(callback) {   
-
-            var xobj = new XMLHttpRequest();
-                xobj.overrideMimeType("application/json");
-            xobj.open('GET', '../LeaderBoard.json', true); // Replace 'my_data' with the path to your file
-            xobj.onreadystatechange = function () {
-                  if (xobj.readyState == 4 && xobj.status == "200") {
-                    // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
-                    callback(xobj.responseText);
-                  }
-            };
-            xobj.send(null);  
-         }
-         loadJSON(function(response) {
-            // Parse JSON string into object
-             var LeaderBoard= JSON.parse(response);
-             LeaderBoard.HighScores.forEach(function(e){
-                 
-             })
-           //  console.log(this.score)
-              
-           });
-           
     }
     update()
     {
