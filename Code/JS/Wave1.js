@@ -620,7 +620,7 @@ class Wave1 extends Phaser.Scene
             this.pterodactylMove();
             
             //console.log(this.player.displayHeight/2+this.player.y)
-            if(this.player.displayHeight/2+this.player.y>=600)
+            if(this.player.getCenter().y>=600-this.player.displayHeight / 2)
             {
                 
                 if(this.IsPlayerImmune==false)
