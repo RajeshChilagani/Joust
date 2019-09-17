@@ -188,7 +188,7 @@ class Wave1 extends Phaser.Scene
         this.physics.add.collider(this.enemies,this.pong);
         this.physics.add.collider(this.eggs,this.pong);
         this.physics.add.collider(this.enemies,this.platforms, hitPlatformEnemy,null, this);
-        //this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
+        this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
         this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
         this.physics.add.overlap(this.player,this.eggs, hitEgg, null, this);
         this.physics.add.collider(this.eggs,this.platforms);
@@ -196,7 +196,7 @@ class Wave1 extends Phaser.Scene
         this.physics.add.collider(this.pterodactyls,this.platforms);
         this.physics.add.collider(this.pterodactyls,this.pong);
         this.physics.add.overlap(this.player, this.pterodactyls, checkCollisionPterodactyl, null, this);
-        //this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
+        this.physics.add.overlap(this.player,this.enemies,CheckCollision,null,this);
         function hitEgg(player, egg) {
             egg.disableBody(true,true);
             this.score += 1;
@@ -316,11 +316,11 @@ class Wave1 extends Phaser.Scene
         }
     }
     move(whenJumpPressed){ //player movement
-        if(!this.IsPlayerImmune) {
+        /*if(!this.IsPlayerImmune) {
             var enemyCollider = this.physics.add.collider(this.player,this.enemies,this.CheckCollision,null,this);
         }
         else{
-        }
+        }*/
         if (this.cursors.left.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
             this.IsPlayerImmune=false
@@ -375,7 +375,7 @@ class Wave1 extends Phaser.Scene
     enemyMove(){ //enemy random jumping
         this.enemies.children.iterate(function (child) {
             child.anims.play('enemyFly', true);
-            var z = Math.floor(Math.random() * 13);
+            var z = Math.floor(Math.random() * 8);
             if(z === 1){
                 child.setVelocity(child.body.velocity.x, child.body.velocity.y - 50);
             }
@@ -568,7 +568,7 @@ class Wave1 extends Phaser.Scene
             this.player.anims.play('idle',true)
             this.player.body.velocity.x=0;
             this.player.body.velocity.y=0;
-            this.player.setPosition(400,600-this.pong.displayHeight-(this.player.displayHeight)/2)
+            this.player.setPosition(this.pong.getCenter().x,600-this.pong.displayHeight-(this.player.displayHeight)/2)
             this.playerLivesText.setText(this.playerLives);
         }
         if(this.playerLives==0)
