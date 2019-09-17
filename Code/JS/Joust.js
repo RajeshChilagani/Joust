@@ -7,8 +7,11 @@ let config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 200 },
-            debug: true
+            debug: false
         }
+    },
+    dom: {
+        createContainer: true
     },
     scene: [Intro,Wave1,EndScreen]
 };
