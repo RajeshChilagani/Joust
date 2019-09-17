@@ -11,7 +11,7 @@ class Wave1 extends Phaser.Scene
         this.playerLivesText
         this.IsPlayerImmune=true;
         this.isAnyKeypressed=false;
-        this.UIScale=1;
+        this.UIScale=.75;
         this.scoreText
         this.score=0
         this.isGameover=false
@@ -46,7 +46,8 @@ class Wave1 extends Phaser.Scene
         let playerHeight=85;
         let playerWidth=90;
         let playerScale=0.55;
-        this.platforms = this.physics.add.staticGroup();
+        //this.platforms = this.physics.add.staticGroup();
+        this.platforms = this.physics.add.group();
         this.cursors = this.input.keyboard.createCursorKeys();
 
     
@@ -58,8 +59,8 @@ class Wave1 extends Phaser.Scene
 
     //UI
     
-        this.scoreText = this.add.text(this.pong.getCenter().x,this.pong.getCenter().y-75/1.6,this.score,{ fontSize: '32px', fontFamily: '"Roboto Condensed"' ,fill: '#FF8833' });
-        this.playerLivesText = this.add.text(this.pong.getCenter().x,this.pong.getCenter().y-75/1.6,this.playerLives,{ fontSize: '32px', fontFamily: '"Roboto Condensed"' ,fill: '#FF8833' });
+        this.scoreText = this.add.text(this.pong.getCenter().x,this.pong.getCenter().y - 75/1.6,this.score,{ fontSize: '24px', fontFamily: '"Roboto Condensed"' ,fill: '#FF8833' });
+        this.playerLivesText = this.add.text(this.pong.getCenter().x,this.pong.getCenter().y- 75/1.6,this.playerLives,{ fontSize: '24px', fontFamily: '"Roboto Condensed"' ,fill: '#FF8833' });
     //Platforms
         //this.platforms.create(350, 568, 'baseplatform').setScale(2).refreshBody();
         this.platforms.create(100, 150, 'platform');
@@ -99,6 +100,8 @@ class Wave1 extends Phaser.Scene
             child.setCollideWorldBounds(true);
             child.setBounce(1,0);
             child.setScale(.75);*/
+            child.setX(1000);
+            child.setY(1000);
             timerEvents.push(this.time.addEvent({ delay: 1000*this.enemies.children.getArray().indexOf(child), callback: this.spawnEnemy, callbackScope: this, args: [child]}));
         }, this);
 
@@ -120,6 +123,14 @@ class Wave1 extends Phaser.Scene
             child.disableBody(true, true);      
             child.setState('notSpawned'); 
             child.body.setAllowGravity(false);
+        }, this);
+
+        this.platforms.children.iterate(function (child) { //sets initial position, velocity
+            child.body.setAllowGravity(false);
+            child.body.setImmovable(true);
+            //child.body.setAllowRotation(true);
+            //child.body.setMass(0.1);
+            //child.body.setAngularAcceleration(5);
         }, this);
 
     //Animations
@@ -179,7 +190,7 @@ class Wave1 extends Phaser.Scene
         this.physics.add.collider(this.enemies,this.pong);
         this.physics.add.collider(this.eggs,this.pong);
         this.physics.add.collider(this.enemies,this.platforms, hitPlatformEnemy,null, this);
-        this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
+        //this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
         this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
         this.physics.add.overlap(this.player,this.eggs, hitEgg, null, this);
         this.physics.add.collider(this.eggs,this.platforms);
@@ -193,8 +204,16 @@ class Wave1 extends Phaser.Scene
             this.score += 1;
             this.scoreText.setText(this.score);
         }
+        /*
+        if(!this.IsPlayerImmune) {
+                var enemyCollider = this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
+            }
+            else{
+            }
+        */
         function CheckCollision(player,enemy)
         {
+            
            // console.log(player.y+24,enemy.y);
            if(player.getCenter().y < enemy.getCenter().y)
            {
@@ -299,7 +318,11 @@ class Wave1 extends Phaser.Scene
         }
     }
     move(whenJumpPressed){ //player movement
-       
+        if(!this.IsPlayerImmune) {
+            var enemyCollider = this.physics.add.collider(this.player,this.enemies,this.CheckCollision,null,this);
+        }
+        else{
+        }
         if (this.cursors.left.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
             this.IsPlayerImmune=false
@@ -348,6 +371,7 @@ class Wave1 extends Phaser.Scene
         if(this.player.body.velocity.y < -250) {this.player.setVelocityY(-250);}
         if(this.player.body.velocity.x > 750) {this.player.setVelocityX(750);}
         if(this.player.body.velocity.x < -750) {this.player.setVelocityX(-750);}
+        //if(this.IsPlayerImmune) { this.player.body.checkCollision.none = true;} else {this.player.body.checkCollision.none = true;}
     }       
 
     enemyMove(){ //enemy random jumping
@@ -382,11 +406,13 @@ class Wave1 extends Phaser.Scene
                 if(child.state === 'invis') {
                     child.enableBody(false, child.x, child.y, true, true);
                     child.setState('vis');
-                    console.log("TIMETIMEITMIEEMTE    " + this.time.now);
                     timerEvents.push(this.time.addEvent({ delay: 4000, callback: this.preactivation, callbackScope: this, args: [correspondingEnemy, child]}));
                     child.anims.play('eggShake'); 
                    // var timedEvent = this.time.delayedCall(this.time.now+3000, this.activateEnemy(correspondingEnemy), [], this);//correspondingEnemy.active
                 }
+            }
+            if(child.getCenter().y >= 575) {
+                this.activateEnemy(correspondingEnemy, child);
             }
             
             i++;
@@ -398,14 +424,39 @@ class Wave1 extends Phaser.Scene
         timerEvents.push(this.time.addEvent({ delay: 4000, callback: this.activateEnemy, args: [correspondingEnemy, child]}));
     }
     activateEnemy(correspondingEnemy,child) {
-        if(child.active){
+        if(child.active && !(child.state === "Hatched")){ //In case we have hit the bottom early, we disrupt this event call.
             correspondingEnemy.enableBody(true, child.x, child.y, true, true);
             if(Math.random() < .5) {correspondingEnemy.setVelocityX(50);}
             else {correspondingEnemy.setVelocityX(-50);}
+            child.setState("Hatched");
             child.disableBody(true, true);
         }
     }
-
+    CheckCollision(player,enemy)
+    {
+        
+       // console.log(player.y+24,enemy.y);
+       if(player.getCenter().y < enemy.getCenter().y)
+       {
+        enemy.disableBody(true,true);
+        this.score+=1;
+        this.scoreText.setText(this.score);
+       } 
+       else if(this.IsPlayerImmune==false) 
+       {
+        this.Lives();
+       }
+       /*if(player.y+playerHeight*playerScale-5<enemy.y)
+       {
+           enemy.disableBody(true,true);
+           score+=1;
+           scoreText.setText('Score: ' + score);
+       }
+       if(player.y+player.displayHeight*playerScale-5>enemy.y)
+       {  
+            this.GameOver();
+       }*/
+    }
     movePong()
     {
         this.Key_Z=  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
@@ -427,8 +478,8 @@ class Wave1 extends Phaser.Scene
         {
             this.pong.body.velocity.x=0;
         }
-        this.scoreText.setPosition(this.pong.getCenter().x-476/5,this.pong.getCenter().y-75/3);
-        this.playerLivesText.setPosition(this.pong.getCenter().x+476/3.5,this.pong.getCenter().y-75/3);
+        this.scoreText.setPosition(this.pong.getCenter().x-476/5 * this.UIScale,this.pong.getCenter().y-75/3  * this.UIScale);
+        this.playerLivesText.setPosition(this.pong.getCenter().x+476/3.5  * this.UIScale,this.pong.getCenter().y-75/3  * this.UIScale);
 
     }
 
@@ -466,7 +517,11 @@ class Wave1 extends Phaser.Scene
                             child.body.velocity.y *= -1;
                         }
                     }
-                    
+                    if(child.body.velocity.x > 0) {
+                        child.setFlipX(false);
+                    } else {
+                        child.setFlipX(true);
+                    }
                     //child.body.setVelocity(child.x - this.player.x, child.x - this.player.x);
                     //child.body.setVelocity(child.body.velocity.x - this.player.body.velocity.x, child.body.velocity.y);
                     //child.rotation = Phaser.Math.Angle.Between(child.x, child.y, this.player.x, this.player.y);
@@ -486,6 +541,7 @@ class Wave1 extends Phaser.Scene
             child.setY(this.platforms.children.getArray()[z].body.y - 20); //20 so above
             if(Math.random() < .5) {child.setVelocityX(50);}
             else {child.setVelocityX(-50);}
+            child.setVelocityY(-10);
             child.setCollideWorldBounds(true);
             child.setBounce(1,0);
             child.setScale(.75)
@@ -515,7 +571,7 @@ class Wave1 extends Phaser.Scene
             this.player.anims.play('idle',true)
             this.player.body.velocity.x=0;
             this.player.body.velocity.y=0;
-            this.player.setPosition(400,600-this.pong.displayHeight-(this.player.displayHeight)/2)
+            this.player.setPosition(this.pong.getCenter().x,600-this.pong.displayHeight-(this.player.displayHeight)/2)
             this.playerLivesText.setText(this.playerLives);
         }
         if(this.playerLives==0)
@@ -538,10 +594,10 @@ class Wave1 extends Phaser.Scene
             this.enemyMove();
             this.eggMove();
             this.movePong();
-           
+            this.pterodactylMove();
             
             //console.log(this.player.displayHeight/2+this.player.y)
-            if(this.player.displayHeight/2+this.player.y>=600)
+            if(this.player.getCenter().y>=600-this.player.displayHeight / 2)
             {
                 
                 if(this.IsPlayerImmune==false)
@@ -549,7 +605,6 @@ class Wave1 extends Phaser.Scene
                     this.Lives(this.pong.getTopLeft().x+150,this.pong.getTopLeft().y-7,this.score);
                 }
             }   
-            this.pterodactylMove();
         }
        
     }
