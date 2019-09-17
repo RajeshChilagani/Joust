@@ -10,6 +10,9 @@ let config = {
             debug: false
         }
     },
+    dom: {
+        createContainer: true
+    },
     scene: [Intro,Wave1,EndScreen]
 };
 
