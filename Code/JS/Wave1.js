@@ -25,7 +25,8 @@ class Wave1 extends Phaser.Scene
         this.load.image('enemy','../Assets/enemy.png');
         this.load.image('pong','../Assets/pong_new.png');
         this.load.spritesheet('player','../Assets/Play.png',{frameWidth:90,frameHeight:85});
-        this.load.spritesheet('playerfly','../Assets/fly.png',{frameWidth:90,frameHeight:85});
+        this.load.spritesheet('playerfly','../Assets/FlyNew.png',{frameWidth:112.5,frameHeight:85});
+        this.load.spritesheet('playerflyMaxSpeed','../Assets/MaxSpeed.png',{frameWidth:120,frameHeight:85});
         this.load.spritesheet('eggShake','../Assets/egg_shake.png',{frameWidth:256/4,frameHeight:70});
         this.load.spritesheet('eggHatch','../Assets/egg_hatch.png',{frameWidth:256/4,frameHeight:70});
         this.load.spritesheet('enemyFly','../Assets/enemy_fly.png',{frameWidth:60,frameHeight:55});
@@ -139,6 +140,13 @@ class Wave1 extends Phaser.Scene
         this.anims.create({
             key: 'fly',
             frames: this.anims.generateFrameNumbers('playerfly', { start: 0, end: 4 }),
+            frameRate: 16,
+            repeat: -1,
+            scale: .7
+        });
+        this.anims.create({
+            key: 'boost',
+            frames: this.anims.generateFrameNumbers('playerflyMaxSpeed', { start: 0, end: 4 }),
             frameRate: 16,
             repeat: -1,
             scale: .7
@@ -313,7 +321,16 @@ class Wave1 extends Phaser.Scene
             }
             else
             {
-                this.player.anims.play('fly',true)
+               
+                if(Math.abs(this.player.body.velocity.x) + Math.abs(this.player.body.velocity.y) > 500)
+                {
+                    this.player.anims.play('boost',true)
+                }
+                else
+                {
+                    this.player.anims.play('fly',true)
+                }
+               
             }
             
         }
