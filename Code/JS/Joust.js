@@ -13,6 +13,7 @@ let config = {
     dom: {
         createContainer: true
     },
+    
     scene: [Intro,Wave1,EndScreen]
 };
 
