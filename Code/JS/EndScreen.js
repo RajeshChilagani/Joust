@@ -5,7 +5,8 @@ class EndScreen extends Phaser.Scene
         super({key:"EndScreen"});
         this.finalScore;
         this.lb
-        
+        this.prompt=false;
+        this.playerName;
     }
     init(data)
     {
@@ -15,7 +16,6 @@ class EndScreen extends Phaser.Scene
     preload()
     {
         this.load.image('Gameover', '../Assets/Gameover.png')
-        //this.load.html('form','../Form.html')
     }
     create()
     {
@@ -49,22 +49,34 @@ class EndScreen extends Phaser.Scene
             { 
                 if(this.lb[i].score<temp)
                 {
+                    if(!this.prompt)
+                    {
+                        this.playerName=prompt("You have entered the LeaderBoard Enter your Name (3 Characters)", "");
+                        this.prompt=true;
+                    }  
+                    let tempName= this.lb[i].name
                     let temptemp= this.lb[i].score
                     this.lb[i].score=temp;
+                    this.lb[i].name=this.playerName;
+                    this.playerName=tempName;
                     temp=temptemp;
                 }
             }
-            this.LeaderBoard=this.add.text(600,0,'LeaderBoard',{ fontSize: '32px', fontFamily: '"AGENCYFB"' ,fill: '#ffffff' });
+            this.LeaderBoard=this.add.text(600,0,'LeaderBoard');
+            this.LeaderBoard.setFontSize("24px");
+            this.LeaderBoard.setFontFamily("Saira Stencil One");
+            this.LeaderBoard.setFill("#34F1B1");
+            this.LeaderBoard.setStroke("#BF136E",5);
            for(let i=0; i<3;i++)
            {
-            this.Lb1 = this.add.text(625,(i+1)*50,this.lb[i].name,{ fontSize: '32px', fontFamily: '"Roboto Condensed"' ,fill: '#ffffff' });
-            this.Lbname = this.add.text(725,(i+1)*50,this.lb[i].score,{ fontSize: '32px', fontFamily: '"Roboto Condensed"' ,fill: '#ffffff' });
+            this.Lb1 = this.add.text(625,(i+1)*50,this.lb[i].name);
+            this.Lbname = this.add.text(725,(i+1)*50,this.lb[i].score);
            }
             
             localStorage.setItem("lbs",JSON.stringify(this.lb))
         }
-        
-        
+    
+
 
     }
 
