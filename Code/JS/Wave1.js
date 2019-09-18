@@ -176,7 +176,7 @@ class Wave1 extends Phaser.Scene
     //Colliders
         this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
         this.physics.add.collider(this.player,this.pong,hitPong,null,this);
-        this.physics.add.collider(this.enemies,this.pong);
+        this.physics.add.collider(this.enemies,this.pong,hitPongEnemy,null,this);
         this.physics.add.collider(this.eggs,this.pong);
         this.physics.add.collider(this.enemies,this.platforms, hitPlatformEnemy,null, this);
         //this.physics.add.collider(this.player,this.enemies,CheckCollision,null,this);
@@ -262,6 +262,16 @@ class Wave1 extends Phaser.Scene
             }
             else{
                 this.IsTouching=false;
+            }
+        }
+        function hitPongEnemy(platform, enemy) {
+            console.log(enemy.getBottomLeft().y);
+            console.log(this.pong.getTopLeft().y);
+            console.log(Math.abs(this.pong.body.velocity.x));
+            if(enemy.getBottomLeft().y >= (this.pong.getTopLeft().y + 10) && Math.abs(this.pong.body.velocity.x) > 100){
+                enemy.disableBody(true, true);
+                this.score+=1;
+                this.scoreText.setText(this.score);
             }
         }
 
