@@ -591,14 +591,17 @@ class Wave1 extends Phaser.Scene
     {
         if(!this.isGameover)
         {
+            if(this.player.body.touching.down===false)
+            {
+                this.IsTouching=false;
+            }
             this.playAnim();
-            this.Ui()
             this.move(false);
             this.enemyMove();
             this.eggMove();
             this.movePong();
             this.pterodactylMove();
-            
+        
             //console.log(this.player.displayHeight/2+this.player.y)
             if(this.player.getCenter().y>=600-this.player.displayHeight / 2)
             {
