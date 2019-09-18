@@ -92,14 +92,6 @@ class Wave1 extends Phaser.Scene
         });
 
         this.enemies.children.iterate(function (child) { //sets initial position, velocity
-            /*var z = Math.floor(Math.random() * 4);
-            child.setX(this.platforms.children.getArray()[z].body.x + 70); //70 hard code for center right now
-            child.setY(this.platforms.children.getArray()[z].body.y - 20); //20 so above
-            if(Math.random() < .5) {child.setVelocityX(50);}
-            else {child.setVelocityX(-50);}
-            child.setCollideWorldBounds(true);
-            child.setBounce(1,0);
-            child.setScale(.75);*/
             child.setX(1000);
             child.setY(1000);
             timerEvents.push(this.time.addEvent({ delay: 1000*this.enemies.children.getArray().indexOf(child), callback: this.spawnEnemy, callbackScope: this, args: [child]}));
@@ -128,9 +120,6 @@ class Wave1 extends Phaser.Scene
         this.platforms.children.iterate(function (child) { //sets initial position, velocity
             child.body.setAllowGravity(false);
             child.body.setImmovable(true);
-            //child.body.setAllowRotation(true);
-            //child.body.setMass(0.1);
-            //child.body.setAngularAcceleration(5);
         }, this);
 
     //Animations
@@ -373,7 +362,6 @@ class Wave1 extends Phaser.Scene
         if(this.player.body.velocity.y < -250) {this.player.setVelocityY(-250);}
         if(this.player.body.velocity.x > 750) {this.player.setVelocityX(750);}
         if(this.player.body.velocity.x < -750) {this.player.setVelocityX(-750);}
-        //if(this.IsPlayerImmune) { this.player.body.checkCollision.none = true;} else {this.player.body.checkCollision.none = true;}
     }       
 
     enemyMove(){ //enemy random jumping
@@ -413,8 +401,17 @@ class Wave1 extends Phaser.Scene
                    // var timedEvent = this.time.delayedCall(this.time.now+3000, this.activateEnemy(correspondingEnemy), [], this);//correspondingEnemy.active
                 }
             }
-            if(child.getCenter().y >= 575) {
-                this.activateEnemy(correspondingEnemy, child);
+            if(child.getCenter().y >= 575 && child.state === 'vis') {
+                //this.activateEnemy(correspondingEnemy, child);
+                this.pterodactyls.create(child.x,child.y,'enemy2');
+                this.pterodactyls.children.getArray()[ this.pterodactyls.getLength()-1 ].setScale(.5);
+                this.pterodactyls.children.getArray()[ this.pterodactyls.getLength()-1 ].setBounce(1,0);
+                this.pterodactyls.children.getArray()[ this.pterodactyls.getLength()-1 ].setCollideWorldBounds(true);
+                this.pterodactyls.children.getArray()[ this.pterodactyls.getLength()-1 ].setState('spawned');
+                this.pterodactyls.children.getArray()[ this.pterodactyls.getLength()-1 ].body.setAllowGravity(false);
+                this.pterodactyls.children.getArray()[ this.pterodactyls.getLength()-1 ].setVelocity(1, -45);
+                child.setState("Hatched");
+                child.disableBody(true, true);
             }
             
             i++;
@@ -487,9 +484,11 @@ class Wave1 extends Phaser.Scene
 
     pterodactylSpawn(){
         this.pterodactyls.children.iterate(function (child) {
-            child.setState('spawned');
-            child.enableBody(true, 700, 300, true, true);
-            child.setVelocity(70, 45);
+            if(child.state === 'notSpawned') {
+                child.setState('spawned');
+                child.enableBody(true, 700, 300, true, true);
+                child.setVelocity(70, 45);
+            }
         }, this);
     }
 
