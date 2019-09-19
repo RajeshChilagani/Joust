@@ -33,6 +33,17 @@ class Wave1 extends Phaser.Scene
         this.load.spritesheet('enemy2','../Assets/enemy2.png',{frameWidth:90,frameHeight:85});
         this.load.image('egg', '../Assets/egg.png')
         //this.load.image('pterodactyl', '../Assets/pika.png');
+    //Sounds
+        this.load.audio('egg_hatching','../Assets/egg_hatching.wav')
+        this.load.audio('game_over','../Assets/game_over.wav')
+        this.load.audio('enemy_killed','../Assets/enemy_killed.wav')
+        this.load.audio('ghost_killed','../Assets/ghost_killed.wav')
+        this.load.audio('player_bounce','../Assets/player_bounce.wav')
+        this.load.audio('player_killed','../Assets/player_killed.wav')
+        this.load.audio('wind','../Assets/wind.wav')
+        this.load.audio('flap','../Assets/flap.wav')
+        this.load.audio('footstep','../Assets/footstep.wav')
+
     }
     create()
     {
@@ -180,7 +191,19 @@ class Wave1 extends Phaser.Scene
             repeat: -1
         });
 
-
+    //Audio
+        this.sound.add('egg_hatching');
+        this.sound.add('game_over');
+        this.sound.add('enemy_killed');
+        this.sound.add('ghost_killed');
+        this.sound.add('player_bounce');
+        this.sound.add('player_killed');
+        this.sound.add('wind');
+        this.sound.add('flap');
+        this.sound.add('footstep');
+        
+        
+        
     //Colliders
         this.physics.add.collider(this.player,this.platforms, hitPlatform, null, this);
         this.physics.add.collider(this.player,this.pong,hitPong,null,this);
@@ -214,6 +237,7 @@ class Wave1 extends Phaser.Scene
            // console.log(player.y+24,enemy.y);
            if(player.getCenter().y < enemy.getCenter().y)
            {
+            this.sound.play('enemy_killed');
             enemy.disableBody(true,true);
             this.score+=1;
             this.scoreText.setText(this.score);
@@ -238,6 +262,7 @@ class Wave1 extends Phaser.Scene
             if(this.IsPlayerImmune==false)
             {
                 if(Math.abs(this.player.body.velocity.x) + Math.abs(this.player.body.velocity.y) > 500){
+                    this.sound.play('ghost_killed');
                     pterodactyl.disableBody(true,true);
                     this.score+=3;
                     this.scoreText.setText(this.score);
@@ -251,8 +276,12 @@ class Wave1 extends Phaser.Scene
         function hitPlatform() {
             if(this.player.body.touching.down && !this.player.body.touching.left && !this.player.body.touching.right) { //Collisions with just the bottom of the player don't cause y bounce   
             this.IsTouching=true;
+            
             this.playAnim();
             this.player.body.setVelocity(this.player.body.velocity.x,0);
+            }
+            else{
+                this.sound.play('player_bounce')
             }
         }
 
@@ -269,6 +298,7 @@ class Wave1 extends Phaser.Scene
             this.player.body.setVelocity(this.player.body.velocity.x,this.player.body.velocity.y);
             }
             else{
+                this.sound.play('player_bounce')
                 this.IsTouching=false;
             }
         }
@@ -324,7 +354,9 @@ class Wave1 extends Phaser.Scene
                
                 if(Math.abs(this.player.body.velocity.x) + Math.abs(this.player.body.velocity.y) > 500)
                 {
+                   
                     this.player.anims.play('boost',true)
+                    this.sound.play('wind');
                 }
                 else
                 {
@@ -467,6 +499,7 @@ class Wave1 extends Phaser.Scene
         enemy.disableBody(true,true);
         this.score+=1;
         this.scoreText.setText(this.score);
+        this.sound.play('enemy_killed')
        } 
        else if(this.IsPlayerImmune==false) 
        {
@@ -584,11 +617,13 @@ class Wave1 extends Phaser.Scene
         this.isGameover=true; 
         //this.scoreText = this.add.text(300,250,'GameOver',{ fontSize: '50Px', fill: '#ffffff' });
         this.pong.disableBody(true,true);
+        this.sound.play('game_over');
         this.scene.start('EndScreen',{score:this.score})
         
     }
     Lives()
     {
+        this.sound.play('player_killed');
         if(this.playerLives>0)
         {
             this.playerLives--;
