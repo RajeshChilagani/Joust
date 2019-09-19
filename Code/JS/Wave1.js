@@ -15,6 +15,7 @@ class Wave1 extends Phaser.Scene
         this.scoreText
         this.score=0
         this.isGameover=false
+        this.soundtime=16;
     }
     preload()
     {
@@ -347,7 +348,17 @@ class Wave1 extends Phaser.Scene
         {
             if(this.IsTouching)
             {
+                console.log(this.player.body.velocity.x , this.player.body.velocity.y)
                 this.player.anims.play('run',true)
+                if(this.player.body.velocity.x>0 || this.player.body.velocity.x<0)
+                {
+                    if(this.soundtime===16)
+                    {
+                        this.sound.play('footstep');
+                        this.soundtime=0;
+                    }
+                    this.soundtime++;
+                }
             }
             else
             {
@@ -361,6 +372,12 @@ class Wave1 extends Phaser.Scene
                 else
                 {
                     this.player.anims.play('fly',true)
+                    if(this.soundtime===16)
+                    {
+                        this.sound.play('flap');
+                        this.soundtime=0;
+                    }
+                    this.soundtime++;
                 }
                
             }
