@@ -20,13 +20,21 @@
 </head>
 <style>
     body{
-        background-image: url("../Assets/background_ui_start_game_02.png");
-        background-repeat:no-repeat;
-        background-size: 1140px 840px;
+       background-image: url("../Assets/background_ui_start_game_02.png");
+        background-size: center;
+        background-repeat:repeat;
+    }
+    #wall
+    {   top: 18.5%;     
+        left:29.25%; 
+        position:absolute;z-index:0;
+        width:43%;
+        height: 67%;
     }
     #playArea{
-        top: 21%;     
-        left: 15.75%;     
+        top: 20%;     
+        left: 30%;     
+        z-index:1;
         position: absolute;
 
     }
@@ -41,8 +49,9 @@
 /*I was trying this commented out div stuff, don't think it's right.*/
 </style>
 <body>
+        <img id='wall' src="../Assets/test.png" alt="Italian Trulli">
     <div id='playArea'>   
-       
+           
     </div>
  
         

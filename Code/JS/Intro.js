@@ -15,6 +15,7 @@ class Intro extends Phaser.Scene
     {
         let introText
         this.Intro = this.add.image(400,300,'Intro');
+        this.Intro.setScale(1.6);
         //this.Intro.setScale(.842, .857);
         this.introText = this.add.text(250,300,'Press Enter to start game');
         this.introText.setFontSize("24px");
