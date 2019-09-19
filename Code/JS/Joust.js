@@ -3,6 +3,7 @@ let config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
+    zoom: .765,
     parent:'playArea',
     physics: {
         default: 'arcade',
