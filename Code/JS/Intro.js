@@ -7,12 +7,14 @@ class Intro extends Phaser.Scene
     }
     preload()
     {
-        this.load.image('Intro', '../Assets/Intro.png')
+        this.load.image('Intro', '../Assets/background_ui_start_game_02.png');
+        //this.load.image('Intro', '../Assets/Intro.png');
     }
     create()
     {
         let introText
         this.Intro = this.add.image(400,300,'Intro');
+        //this.Intro.setScale(.842, .857);
         this.introText = this.add.text(250,300,'Press Enter to start game');
         this.introText.setFontSize("24px");
         this.introText.setFontFamily("Saira Stencil One");
