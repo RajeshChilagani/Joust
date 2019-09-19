@@ -373,7 +373,6 @@ class Wave1 extends Phaser.Scene
                         this.sound.play('wind');
                         this.soundtime=0;
                     }
-                    this.sound.stop('wind');
                     this.soundtime++;
                     
                 }
