@@ -43,7 +43,7 @@ class Wave1 extends Phaser.Scene
         this.load.audio('player_killed','../Assets/player_killed.wav')
         this.load.audio('wind','../Assets/wind.wav')
         this.load.audio('flap','../Assets/flap.wav')
-        this.load.audio('footstep','../Assets/footstep.wav')
+        this.load.audio('footstep','../Assets/walk.wav')
 
     }
     create()
@@ -323,7 +323,7 @@ class Wave1 extends Phaser.Scene
             this.isAnyKeypressed==true
             this.IsPlayerImmune=false
             this.move(true);
-            this.sound.play('flap');
+            this.sound.play('flap');    
         }, this); 
         this.input.keyboard.on("keyup_R", function(event){
            
@@ -355,7 +355,7 @@ class Wave1 extends Phaser.Scene
                 {
                     if(this.soundtime===16)
                     {
-                        this.sound.play('footstep');
+                        this.sound.play('footstep','',0.3);
                         this.soundtime=0;
                     }
                     this.soundtime++;
