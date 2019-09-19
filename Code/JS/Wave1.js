@@ -26,7 +26,8 @@ class Wave1 extends Phaser.Scene
         this.load.image('enemy','../Assets/enemy.png');
         this.load.image('pong','../Assets/pong_new.png');
         this.load.spritesheet('player','../Assets/Play.png',{frameWidth:90,frameHeight:85});
-        this.load.spritesheet('playerfly','../Assets/FlyNew.png',{frameWidth:112.5,frameHeight:85});
+        this.load.spritesheet('playerfly','../Assets/fly.png',{frameWidth:90,frameHeight:85});
+        this.load.spritesheet('playerflyspeed','../Assets/FlyNew.png',{frameWidth:112.5,frameHeight:85});
         this.load.spritesheet('playerflyMaxSpeed','../Assets/MaxSpeed.png',{frameWidth:120,frameHeight:85});
         this.load.spritesheet('eggShake','../Assets/egg_shake.png',{frameWidth:256/4,frameHeight:70});
         this.load.spritesheet('eggHatch','../Assets/egg_hatch.png',{frameWidth:256/4,frameHeight:70});
@@ -42,7 +43,7 @@ class Wave1 extends Phaser.Scene
         this.load.audio('ghost_killed','../Assets/ghost_killed.wav')
         this.load.audio('player_bounce','../Assets/player_bounce.wav')
         this.load.audio('player_killed','../Assets/player_killed.wav')
-        this.load.audio('wind','../Assets/wind.wav')
+        this.load.audio('wind','../Assets/boost.wav')
         this.load.audio('flap','../Assets/flap.wav')
         this.load.audio('footstep','../Assets/walk.wav')
 
@@ -163,6 +164,13 @@ class Wave1 extends Phaser.Scene
             scale: .7
         });
         this.anims.create({
+            key: 'flylines',
+            frames: this.anims.generateFrameNumbers('playerflyspeed', { start: 0, end: 4 }),
+            frameRate: 16,
+            repeat: -1,
+            scale: .7
+        });
+        this.anims.create({
             key: 'boost',
             frames: this.anims.generateFrameNumbers('playerflyMaxSpeed', { start: 0, end: 4 }),
             frameRate: 16,
@@ -217,7 +225,7 @@ class Wave1 extends Phaser.Scene
         this.sound.add('player_killed');
         this.sound.add('wind');
         this.sound.add('flap');
-        this.sound.add('footstep');
+        this.footstep=this.sound.add('footstep');
         
         
         
@@ -371,7 +379,8 @@ class Wave1 extends Phaser.Scene
                 {
                     if(this.soundtime===16)
                     {
-                        this.sound.play('footstep','',0.3);
+                        this.footstep.setVolume(0.2);
+                        this.footstep.play();
                         this.soundtime=0;
                     }
                     this.soundtime++;
@@ -391,6 +400,10 @@ class Wave1 extends Phaser.Scene
                     }
                     this.soundtime++;
                     
+                }
+                else if(Math.abs(this.player.body.velocity.x) + Math.abs(this.player.body.velocity.y) > 300)
+                {
+                    this.player.anims.play('flylines',true)
                 }
                 else
                 {

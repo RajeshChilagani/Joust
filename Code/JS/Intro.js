@@ -9,6 +9,7 @@ class Intro extends Phaser.Scene
     {
         //this.load.image('Intro', '../Assets/background_ui_start_game_02.png');
         this.load.image('Intro', '../Assets/Intro.png');
+        this.load.audio('music','../Assets/bgm.mp3')
     }
     create()
     {
@@ -21,6 +22,9 @@ class Intro extends Phaser.Scene
         this.introText.setFill("#34F1B1"),
         this.introText.setStroke("#BF136E",5),
         this.input.keyboard.on('keyup',function(e){
+        this.intro =this.sound.add('music');
+        this.intro.setVolume(0.2);
+        this.intro.play();
             if(e.key=='Enter')
             {
                 this.scene.start('Wave1');
