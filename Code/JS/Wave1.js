@@ -323,6 +323,7 @@ class Wave1 extends Phaser.Scene
             this.isAnyKeypressed==true
             this.IsPlayerImmune=false
             this.move(true);
+            this.sound.play('flap');
         }, this); 
         this.input.keyboard.on("keyup_R", function(event){
            
@@ -367,17 +368,18 @@ class Wave1 extends Phaser.Scene
                 {
                    
                     this.player.anims.play('boost',true)
-                    this.sound.play('wind');
+                    if(this.soundtime===16)
+                    {
+                        this.sound.play('wind');
+                        this.soundtime=0;
+                    }
+                    this.sound.stop('wind');
+                    this.soundtime++;
+                    
                 }
                 else
                 {
                     this.player.anims.play('fly',true)
-                    if(this.soundtime===16)
-                    {
-                        this.sound.play('flap');
-                        this.soundtime=0;
-                    }
-                    this.soundtime++;
                 }
                
             }
