@@ -14,7 +14,6 @@ let config = {
     dom: {
         createContainer: true
     },
-   //parent: background,
     scene: [Intro,Wave1,EndScreen]
 };
 

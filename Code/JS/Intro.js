@@ -7,8 +7,8 @@ class Intro extends Phaser.Scene
     }
     preload()
     {
-        this.load.image('Intro', '../Assets/background_ui_start_game_02.png');
-        //this.load.image('Intro', '../Assets/Intro.png');
+        //this.load.image('Intro', '../Assets/background_ui_start_game_02.png');
+        this.load.image('Intro', '../Assets/Intro.png');
     }
     create()
     {
