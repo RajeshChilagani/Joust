@@ -7,6 +7,10 @@
     <title>Document</title>
     <script src="JS/phaser.js"></script>  
     <script src="JS/fontLoader.js"></script>
+    <script src="JS/Intro.js"></script>
+    <script src="JS/Wave1.js"></script>
+    <script src="JS/EndScreen.js"></script>
+    <script src="JS/Joust.js"></script>
    
 
 
@@ -20,6 +24,12 @@
         background-repeat:no-repeat;
         background-size:initial;
     }
+    #playArea{
+        top: 10%;     
+        left: 25%;     
+        position: absolute;
+
+    }
    /* div.absolute {
   position: absolute;
   top: 80px;
@@ -31,12 +41,9 @@
 /*I was trying this commented out div stuff, don't think it's right.*/
 </style>
 <body>
-    //<div class = "absolute">   
-        <script src="JS/Intro.js"></script>
-        <script src="JS/Wave1.js"></script>
-        <script src="JS/EndScreen.js"></script>
-        <script src="JS/Joust.js"></script>
-    //</div>
+    <div id='playArea'>   
+       
+    </div>
  
         
 </body>
