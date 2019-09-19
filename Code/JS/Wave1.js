@@ -42,7 +42,7 @@ class Wave1 extends Phaser.Scene
         this.load.audio('ghost_killed','../Assets/ghost_killed.wav')
         this.load.audio('player_bounce','../Assets/player_bounce.wav')
         this.load.audio('player_killed','../Assets/player_killed.wav')
-        this.load.audio('wind','../Assets/wind.wav')
+        this.load.audio('wind','../Assets/boost.wav')
         this.load.audio('flap','../Assets/flap.wav')
         this.load.audio('footstep','../Assets/walk.wav')
 
