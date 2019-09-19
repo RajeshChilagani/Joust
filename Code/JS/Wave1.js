@@ -32,6 +32,7 @@ class Wave1 extends Phaser.Scene
         this.load.spritesheet('eggHatch','../Assets/egg_hatch.png',{frameWidth:256/4,frameHeight:70});
         this.load.spritesheet('enemyFly','../Assets/enemy_fly.png',{frameWidth:60,frameHeight:55});
         this.load.spritesheet('enemy2','../Assets/enemy2.png',{frameWidth:90,frameHeight:85});
+        this.load.spritesheet('sludge','../Assets/sludge.png',{frameWidth:550,frameHeight:85});
         this.load.image('egg', '../Assets/egg.png')
         //this.load.image('pterodactyl', '../Assets/pika.png');
     //Sounds
@@ -64,6 +65,11 @@ class Wave1 extends Phaser.Scene
         this.cursors = this.input.keyboard.createCursorKeys();
 
     
+    //Sludge
+        this.sludge = this.physics.add.sprite(400,595,'sludge');
+        this.sludge.setScale(1.64,1);
+        this.sludge.body.setAllowGravity(false);
+        this.sludge.setImmovable(true);
 
     //Pong
         this.pong= this.physics.add.sprite(400,600-16,'pong');
@@ -192,6 +198,16 @@ class Wave1 extends Phaser.Scene
             repeat: -1
         });
 
+        this.anims.create({
+            key: 'sludge',
+            frames: this.anims.generateFrameNumbers('sludge', { start: 0, end: 5 }),
+            frameRate: 6,
+            repeat: -1,
+            yoyo:false,
+            skipMissedFrames:true
+        });
+    //Play BG animations
+        this.sludge.anims.play('sludge',true);
     //Audio
         this.sound.add('egg_hatching');
         this.sound.add('game_over');
@@ -455,7 +471,12 @@ class Wave1 extends Phaser.Scene
     enemyMove(){ //enemy random jumping
         this.enemies.children.iterate(function (child) {
             child.anims.play('enemyFly', true);
-            var z = Math.floor(Math.random() * 13);
+            if(child.y < 555){
+                var z = Math.floor(Math.random() * 13);
+            }
+            else{
+                var z = Math.floor(Math.random() * 10);
+            }
             if(z === 1){
                 child.setVelocity(child.body.velocity.x, child.body.velocity.y - 50);
             }
