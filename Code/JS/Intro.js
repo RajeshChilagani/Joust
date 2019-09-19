@@ -24,6 +24,7 @@ class Intro extends Phaser.Scene
         this.input.keyboard.on('keyup',function(e){
         this.intro =this.sound.add('music');
         this.intro.setVolume(0.2);
+        this.intro.setLoop(true);
         this.intro.play();
             if(e.key=='Enter')
             {
