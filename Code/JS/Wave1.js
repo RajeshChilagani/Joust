@@ -400,9 +400,20 @@ class Wave1 extends Phaser.Scene
     }
     move(whenJumpPressed){ //player movement
         if(!this.IsPlayerImmune) {
-            var enemyCollider = this.physics.add.collider(this.player,this.enemies,this.CheckCollision,null,this);
+            if(!this.physics.world.colliders.getActive().find(function(i){
+                return i.name == 'enemyCollider'
+            })){
+                var enemyCollider = this.physics.add.collider(this.player,this.enemies,this.CheckCollision,null,this).name = "enemyCollider";
+            }
         }
         else{
+            if(this.physics.world.colliders.getActive().find(function(i){
+                return i.name == 'enemyCollider'
+            })){
+                (this.physics.world.colliders.getActive().find(function(i){
+                    return i.name == 'enemyCollider'
+                })).destroy();
+            }
         }
         if (this.cursors.left.isDown && (this.player.body.touching.down || whenJumpPressed))
         {
