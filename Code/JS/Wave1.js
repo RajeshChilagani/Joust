@@ -497,6 +497,13 @@ class Wave1 extends Phaser.Scene
                 child.setVelocityY(-150);
             } else if(child.body.velocity.y > 150) {
                 child.setVelocityY(150);
+            } else if(child.body.velocity.x < 50 && child.body.velocity.x > -50) {
+                if(child.flipX){
+                    child.body.velocity.x = 50;
+                } else{
+                    child.body.velocity.x = -50;
+                }
+
             }
             if(child.body.velocity.x > 0) {
                 child.setFlipX(false);
